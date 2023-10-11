@@ -134,3 +134,30 @@ void free_path(char** path)
 	}
 	free(path); /* then free the array */
 }
+
+static int atexit_count = 0;
+
+/* Our custom atexit function, registering functions to be called at exit */
+int my_atexit(void (*function)(void)) {
+    if (atexit_count >= ATEXIT_MAX) {
+        return -1;  /* Cannot register more functions */
+    }
+    atexit_functions[atexit_count++] = function;
+    return 0;
+}
+
+/* Our implementation of the _exit function */
+void _exit(int status) {
+    /* Flush all open streams */
+    if (fflush(NULL) != 0) {
+        /* Optionally handle fflush error */
+    }
+
+    /* Call functions registered with atexit in reverse order */
+    while (atexit_count > 0) {
+        atexit_count--;
+        (*atexit_functions[atexit_count])();
+    }
+    /* _exit to system, ending program execution */
+    _exit(status);  /* Note: this is the actual _exit system call, it's not recursive */
+}

@@ -35,14 +35,14 @@ void run_interactive(char *av)
 		if (get == -1) {
 			write(STDOUT_FILENO, "\n", 1);
 			free(buf);
-			exit(EXIT_SUCCESS); /* Exiting after EOF or error */
+			_exit(EXIT_SUCCESS); /* Exiting after EOF or error */
 		}
 
 		buf[strcspn(buf, "\n")] = '\0'; /* Remove newline character */
 
 		if (strcmp(buf, "exit") == 0) {
 			free(buf);
-			exit(EXIT_SUCCESS); /* Exit command */
+			_exit(EXIT_SUCCESS); /* Exit command */
 		}
 
 		if (strcmp(buf, "env") == 0) {
@@ -64,7 +64,7 @@ void run_interactive(char *av)
 			perror("Error on fork");
 			free(buf);
 			free_path(path);
-			exit(EXIT_FAILURE); /* Exit if fork failed */
+			_exit(EXIT_FAILURE); /* Exit if fork failed */
 		}
 
 		if (child_pid == 0) {
@@ -73,7 +73,7 @@ void run_interactive(char *av)
 				perror(path[0]);
 				free(buf);
 				free_path(path);
-				exit(EXIT_FAILURE); /* Use _exit in child process */
+				_exit(EXIT_FAILURE); /* Use _exit in child process */
 			}
 		} else {
 			/* We are in the parent process */
@@ -100,7 +100,7 @@ void run_noninteractive(char *av)
 
 		if (strcmp(buf, "exit") == 0) {
 			free(buf);
-			exit(EXIT_SUCCESS); /* Exit command */
+			_exit(EXIT_SUCCESS); /* Exit command */
 		}
 
 		if (strcmp(buf, "env") == 0) {
@@ -111,7 +111,7 @@ void run_noninteractive(char *av)
 		path = split_string(buf, " ");
 
 		if (path == NULL)
-			exit(EXIT_SUCCESS);
+			_exit(EXIT_SUCCESS);
 
 		if (access(path[0], F_OK | X_OK) == -1) {
 			perror(path[0]); /* Give specific error message */
@@ -125,7 +125,7 @@ void run_noninteractive(char *av)
 			perror("Error on fork");
 			free(buf);
 			free_path(path);
-			exit(EXIT_FAILURE); /* Exit if fork failed */
+			_exit(EXIT_FAILURE); /* Exit if fork failed */
 		}
 
 		if (child_pid == 0) {
@@ -134,7 +134,7 @@ void run_noninteractive(char *av)
 				perror(path[0]);
 				free(buf);
 				free_path(path);
-				exit(EXIT_FAILURE); /* Use _exit in child process */
+				_exit(EXIT_FAILURE); /* Use _exit in child process */
 			}
 		} else {
 			/* We are in the parent process */
