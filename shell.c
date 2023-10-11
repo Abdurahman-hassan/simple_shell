@@ -4,7 +4,7 @@
 /**
  * free_path - free the path array
  * Function to properly free the path array
- * @param path
+ * @path: an array holds the commands enterd by user
  */
 void free_path(char** path)
 {
