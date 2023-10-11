@@ -1,9 +1,6 @@
 #include "main.h"
-
 #define MAX_CMD_LENGTH 1024
-#include "main.h"
 
-#define MAX_CMD_LENGTH 1024
 /**
  * free_path - free the path array
  * Function to properly free the path array
