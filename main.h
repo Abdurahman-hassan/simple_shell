@@ -14,6 +14,7 @@ void run_noninteractive(char *av);
 unsigned int _strlen(char *s);
 void _env(void);
 char **split_string(char *string, char *delim);
+void free_path(char** path);
 
 #endif /* SIMPLE_SHELL_MAIN_H */
 
