@@ -20,7 +20,6 @@ void _env(void);
 char **split_string(char *string, char *delim);
 void free_path(char** path);
 
-static void (*atexit_functions[ATEXIT_MAX])(void);
 int my_atexit(void (*function)(void));
 void _exit(int status);
 

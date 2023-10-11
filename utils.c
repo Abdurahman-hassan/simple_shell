@@ -135,6 +135,7 @@ void free_path(char** path)
 	free(path); /* then free the array */
 }
 
+static void (*atexit_functions[ATEXIT_MAX])(void);
 static int atexit_count = 0;
 
 /* Our custom atexit function, registering functions to be called at exit */
