@@ -110,6 +110,9 @@ void run_noninteractive(char *av)
 
 		path = split_string(buf, " ");
 
+		if (path == NULL)
+			exit(EXIT_SUCCESS);
+
 		if (access(path[0], F_OK | X_OK) == -1) {
 			perror(path[0]); /* Give specific error message */
 			free(buf);
