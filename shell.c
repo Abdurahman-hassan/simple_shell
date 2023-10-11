@@ -1,6 +1,23 @@
 #include "main.h"
 
 #define MAX_CMD_LENGTH 1024
+#include "main.h"
+
+#define MAX_CMD_LENGTH 1024
+/**
+ * free_path - free the path array
+ * Function to properly free the path array
+ * @param path
+ */
+void free_path(char** path)
+{
+	char** current = path;
+	while (*current) {
+		free(*current); /* free each string */
+		current++;
+	}
+	free(path); /* then free the array */
+}
 /**
  * main - A simple UNIX command interpreter.
  * @ac: The number of arguments passed to the program.
@@ -25,114 +42,120 @@ void run_interactive(char *av)
 	char *buf = NULL, **path;
 	pid_t child_pid;
 	int get, status;
-	size_t n = 10;
-
+	size_t n = 0; /* Allocate buffer size dynamically */
+	(void)av;
 	while (1) {
-		/*Print the custom shell prompt*/
-		write(STDOUT_FILENO, "($) ", 4);
+		write(STDOUT_FILENO, "($) ", 4); /* Shell prompt */
 
 		get = getline(&buf, &n, stdin);
-		if (get == -1)
-		{
-			write(STDOUT_FILENO, "\n", 2);
-			exit(EXIT_FAILURE);
+		if (get == -1) {
+			write(STDOUT_FILENO, "\n", 1);
+			free(buf);
+			exit(EXIT_SUCCESS); /* Exiting after EOF or error */
 		}
 
-		/*Remove the trailing newline character*/
-		buf[strcspn(buf, "\n")] = '\0';
+		buf[strcspn(buf, "\n")] = '\0'; /* Remove newline character */
 
-		/*Exit the shell when the user types 'exit'*/
 		if (strcmp(buf, "exit") == 0) {
-			exit(EXIT_SUCCESS);
+			free(buf);
+			exit(EXIT_SUCCESS); /* Exit command */
 		}
 
-		if (strcmp(buf, "env") == 0)
+		if (strcmp(buf, "env") == 0) {
 			_env();
+			continue; /* Skip the rest of the loop for 'env' */
+		}
 
 		path = split_string(buf, " ");
 
-		if (access(path[0], F_OK & X_OK) == -1)
-		{
-			printf("%s: %s\n", av, strerror(errno));
-			continue;
+		if (access(path[0], F_OK | X_OK) == -1) {
+			perror(path[0]); /* Give specific error message */
+			free(buf);
+			free_path(path);
+			continue; /* Go to the next iteration */
 		}
 
-		child_pid = fork(); /*Create a child process*/
+		child_pid = fork(); /* Create a child process */
 		if (child_pid == -1) {
-			printf("%s: %s\n", av, strerror(errno));
-			exit(EXIT_FAILURE);
+			perror("Error on fork");
+			free(buf);
+			free_path(path);
+			exit(EXIT_FAILURE); /* Exit if fork failed */
 		}
 
-		if (child_pid == 0) { /*Inside the child process*/
-
-			/*Execute the command*/
-			if (execve(path[0], path, NULL) == -1)
-			{
-				printf("%s: %s\n", av, strerror(errno));
-				continue;
+		if (child_pid == 0) {
+			/* We are in the child process */
+			if (execve(path[0], path, NULL) == -1) {
+				perror(path[0]);
+				free(buf);
+				free_path(path);
+				_exit(EXIT_FAILURE); /* Use _exit in child process */
 			}
 		} else {
-			wait(&status);  /*Make the parent process wait until the child completes*/
+			/* We are in the parent process */
+			wait(&status); /* Wait for child process to finish */
 		}
+
+		free_path(path); /* Free path after using it */
 	}
+
+	/* This code is unreachable in the current structure, but is good practice */
+	free(buf);
 }
 
 void run_noninteractive(char *av)
 {
-    char *buf = NULL, **path;
-    pid_t child_pid;
-    int get, status;
-    size_t n = 0; /* Let getline allocate with malloc/realloc */
+	char *buf = NULL, **path;
+	pid_t child_pid;
+	int get, status;
+	size_t n = 0; /* Allocate buffer size dynamically */
 
-    while ((get = getline(&buf, &n, stdin)) != -1) 
-    {   
-         /* Keep reading lines until EOF */
-         /*Remove the trailing newline character*/
-        buf[strcspn(buf, "\n")] = '\0';
+	(void)av;
+	while ((get = getline(&buf, &n, stdin)) != -1) {
+		buf[strcspn(buf, "\n")] = '\0'; /* Remove newline character */
 
-        /*Exit the shell when the user types 'exit'*/
-        if (strcmp(buf, "exit") == 0) {
-            free(buf);
-            exit(EXIT_SUCCESS);  /* It's better to exit successfully when user types 'exit'*/
-        }
+		if (strcmp(buf, "exit") == 0) {
+			free(buf);
+			exit(EXIT_SUCCESS); /* Exit command */
+		}
 
-        if (strcmp(buf, "env") == 0) {
-            _env();
-            continue; /* Skip the rest of the loop for 'env' */
-        }
+		if (strcmp(buf, "env") == 0) {
+			_env();
+			continue; /* Skip the rest of the loop for 'env' */
+		}
 
-        path = split_string(buf, " ");
+		path = split_string(buf, " ");
 
-        if (access(path[0], F_OK | X_OK) == -1)
-        {
-            printf("%s: %s\n", av, strerror(errno));
-            free(buf); /* free the buffer before continuing */
-            free(path); /* free the path before continuing */
-            continue;
-        }
+		if (access(path[0], F_OK | X_OK) == -1) {
+			perror(path[0]); /* Give specific error message */
+			free(buf);
+			free_path(path);
+			continue; /* Go to the next iteration */
+		}
 
-        child_pid = fork(); /* Create a child process */
-        if (child_pid == -1) {
-            perror(av); /* Use perror for system error messages */
-            free(buf);
-            free(path); /* free the path on error */
-            exit(EXIT_FAILURE);
-        }
+		child_pid = fork(); /* Create a child process */
+		if (child_pid == -1) {
+			perror("Error on fork");
+			free(buf);
+			free_path(path);
+			exit(EXIT_FAILURE); /* Exit if fork failed */
+		}
 
-        if (child_pid == 0) { 
-            /*Inside the child process*/
-            /*Execute the command*/
-            if (execve(path[0], path, NULL) == -1)
-            {
-                perror(av);
-                free(buf);
-                free(path); /* free the path on error */
-                exit(EXIT_FAILURE); /* Child process should exit on failure */
-            }
-        } else {
-            wait(&status);  /*Make the parent process wait until the child completes*/
-        }
-        free(path); /* free the path after use */
-    }
-    free(buf);  /* Free the buffer at the end */
+		if (child_pid == 0) {
+			/* We are in the child process */
+			if (execve(path[0], path, NULL) == -1) {
+				perror(path[0]);
+				free(buf);
+				free_path(path);
+				_exit(EXIT_FAILURE); /* Use _exit in child process */
+			}
+		} else {
+			/* We are in the parent process */
+			wait(&status); /* Wait for child process to finish */
+		}
+
+		free_path(path); /* Free path after using it */
+	}
+
+	free(buf); /* Free buf at the end (important if getline fails) */
 }
