@@ -119,3 +119,18 @@ char **split_string(char *string, char *delim)
     /*Return the array of words*/
     return array;
 }
+
+/**
+ * free_path - free the path array
+ * Function to properly free the path array
+ * @path: an array holds the commands enterd by user
+ */
+void free_path(char** path)
+{
+	char** current = path;
+	while (*current) {
+		free(*current); /* free each string */
+		current++;
+	}
+	free(path); /* then free the array */
+}

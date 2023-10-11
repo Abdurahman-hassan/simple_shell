@@ -1,20 +1,7 @@
 #include "main.h"
+
 #define MAX_CMD_LENGTH 1024
 
-/**
- * free_path - free the path array
- * Function to properly free the path array
- * @path: an array holds the commands enterd by user
- */
-void free_path(char** path)
-{
-	char** current = path;
-	while (*current) {
-		free(*current); /* free each string */
-		current++;
-	}
-	free(path); /* then free the array */
-}
 /**
  * main - A simple UNIX command interpreter.
  * @ac: The number of arguments passed to the program.
