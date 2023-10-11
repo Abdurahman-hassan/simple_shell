@@ -43,7 +43,7 @@ void run_interactive(char *av)
 
         /*Exit the shell when the user types 'exit'*/
         if (strcmp(buf, "exit") == 0) {
-            exit(EXIT_FAILURE);
+            exit(EXIT_SUCCESS);
         }
 
         if (strcmp(buf, "env") == 0)
@@ -98,7 +98,7 @@ void run_noninteractive(char *av)
 
     /*Exit the shell when the user types 'exit'*/
     if (strcmp(buf, "exit") == 0) {
-        exit(EXIT_FAILURE);
+        exit(EXIT_SUCCESS);
     }
 
     if (strcmp(buf, "env") == 0)
