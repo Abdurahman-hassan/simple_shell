@@ -73,7 +73,7 @@ void run_interactive(char *av)
 				perror(path[0]);
 				free(buf);
 				free_path(path);
-				_exit(EXIT_FAILURE); /* Use _exit in child process */
+				exit(EXIT_FAILURE); /* Use _exit in child process */
 			}
 		} else {
 			/* We are in the parent process */
@@ -131,7 +131,7 @@ void run_noninteractive(char *av)
 				perror(path[0]);
 				free(buf);
 				free_path(path);
-				_exit(EXIT_FAILURE); /* Use _exit in child process */
+				exit(EXIT_FAILURE); /* Use _exit in child process */
 			}
 		} else {
 			/* We are in the parent process */
