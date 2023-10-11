@@ -15,5 +15,5 @@ unsigned int _strlen(char *s);
 void _env(void);
 char **split_string(char *string, char *delim);
 
-#endif /* SIMPLE_SHELL_MAIN_H */
+#endif /*SIMPLE_SHELL_MAIN_H*/
 
