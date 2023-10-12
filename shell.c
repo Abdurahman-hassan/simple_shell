@@ -10,6 +10,7 @@
  */
 int main(int ac, char **av)
 {
+	int *_status = get_status();
 	(void)ac;
 
 	if (isatty(STDIN_FILENO)) {
@@ -18,7 +19,7 @@ int main(int ac, char **av)
 		run_noninteractive(av[0]);
 	}
 
-	return (0);
+	return (*_status);
 }
 
 void run_interactive(char *av)
@@ -92,15 +93,23 @@ void run_noninteractive(char *av)
 	char *buf = NULL, **path;
 	pid_t child_pid;
 	int get, status;
+	int *_status = get_status();
 	size_t n = 0; /* Allocate buffer size dynamically */
 
 	(void)av;
 	while ((get = getline(&buf, &n, stdin)) != -1) {
+
 		buf[strcspn(buf, "\n")] = '\0'; /* Remove newline character */
+
+		if (isempty(buf) == -1) /* checks if the string holds spaces only */
+        {
+			free(buf);
+			exit(*_status);
+		}
 
 		if (strcmp(buf, "exit") == 0) {
 			free(buf);
-			exit(EXIT_SUCCESS); /* Exit command */
+			exit(*_status); /* Exit command */
 		}
 
 		if (strcmp(buf, "env") == 0) {
@@ -111,7 +120,9 @@ void run_noninteractive(char *av)
 		path = split_string(buf, " ");
 
 		if (path == NULL)
-			exit(EXIT_SUCCESS);
+		{
+			exit(EXIT_FAILURE);
+		}
 
 		if (access(path[0], F_OK | X_OK) == -1) {
 			perror(path[0]); /* Give specific error message */
@@ -130,7 +141,7 @@ void run_noninteractive(char *av)
 
 		if (child_pid == 0) {
 			/* We are in the child process */
-			if (execve(path[0], path, NULL) == -1) {
+			if (execve(path[0], path, environ) == -1) {
 				perror(path[0]);
 				free(buf);
 				free_path(path);
@@ -139,6 +150,10 @@ void run_noninteractive(char *av)
 		} else {
 			/* We are in the parent process */
 			wait(&status); /* Wait for child process to finish */
+
+			if ( WIFEXITED(status) ) {
+        		*_status = WEXITSTATUS(status);
+			}
 		}
 
 		free_path(path); /* Free path after using it */

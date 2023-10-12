@@ -12,6 +12,7 @@
 #include <errno.h>
 #include <stddef.h>
 
+extern char **environ;
 
 void run_interactive(char *av);
 void run_noninteractive(char *av);
@@ -22,6 +23,8 @@ void free_path(char** path);
 
 int my_atexit(void (*function)(void));
 void _exit(int status);
+int *get_status(void);
+int isempty(char *str);
+int _isalpha(int c);
 
 #endif /* SIMPLE_SHELL_MAIN_H */
-

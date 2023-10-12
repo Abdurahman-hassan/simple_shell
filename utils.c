@@ -120,6 +120,35 @@ char **split_string(char *string, char *delim)
     return array;
 }
 
+int isempty(char *str)
+{
+	while (*str != '\0')
+	{
+		if (_isalpha(*str) == 1)
+			return (1);
+		str++;
+	}
+
+	return (-1);
+}
+
+/**
+ * _isalpha - Checks for alphabetic character.
+ * @c: The character to check.
+ *
+ * Return: 1 if c is a letter, lowercase or uppercase.
+ *         0 otherwise.
+*/
+
+int _isalpha(int c)
+{
+	if (c >= 97 && c <= 122)
+		return (1);
+	if (c >= 65 && c <= 90)
+		return (1);
+	return (0);
+}
+
 /**
  * free_path - free the path array
  * Function to properly free the path array
@@ -161,4 +190,11 @@ void _exit(int status) {
     }
     /* _exit to system, ending program execution */
     _exit(status);  /* Note: this is the actual _exit system call, it's not recursive */
+}
+
+int *get_status(void)
+{
+    static int _status = EXIT_SUCCESS;
+
+    return (&_status);
 }
