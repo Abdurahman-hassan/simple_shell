@@ -59,4 +59,8 @@ int _isalpha(int c);
 void not_found_err(char *av, char *cmd);
 void _env(void);
 
+
+void execute_command(char *buf, char **path, char *cmd);
+char *check_file_in_path(char *buf, char **path, char *cmd, char *av);
+
 #endif /* SIMPLE_SHELL_MAIN_H */
