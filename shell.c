@@ -4,7 +4,7 @@
  * main - A simple UNIX command interpreter.
  * @ac: The number of arguments passed to the program.
  * @av: An array of pointers to the arguments.
- * @return 0 on success.
+ * Return: 0 on success.
  */
 int main(int ac, char **av)
 {
@@ -12,9 +12,12 @@ int main(int ac, char **av)
 
 	(void)ac;
 
-	if (isatty(STDIN_FILENO)) {
+	if (isatty(STDIN_FILENO))
+	{
 		run_interactive(av[0]);
-	} else {
+	}
+	else
+	{
 		run_noninteractive(av[0]);
 	}
 

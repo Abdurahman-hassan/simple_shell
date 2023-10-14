@@ -3,8 +3,7 @@
 void run_interactive(char *av)
 {
 	char *buf = NULL, *cmd = NULL, **path = NULL;
-	pid_t child_pid;
-	int get, status;
+	int get;
 	int *_status = get_status();
 	size_t n = 0; /* Allocate buffer size dynamically */
 
@@ -16,7 +15,7 @@ void run_interactive(char *av)
 		{
 			write(STDOUT_FILENO, "\n", 1);
 			free(buf);
-			exit(EXIT_SUCCESS); /* Exiting after EOF or error */
+			exit(*_status); /* Exiting after EOF or error */
 		}
 
 		buf[strcspn(buf, "\n")] = '\0'; /* Remove newline character */
@@ -27,13 +26,13 @@ void run_interactive(char *av)
 		if (strcmp(buf, "exit") == 0)
 		{
 			free(buf);
-			exit(EXIT_SUCCESS); /* Exit command */
+			exit(*_status); /* Exit command */
 		}
 
 		if (strcmp(buf, "env") == 0)
 		{
 			_env();
-			continue; /* Skip the rest of the loop for 'env' */
+			/*continue;*/ /* Skip the rest of the loop for 'env' */
 		}
 
 		path = split_string(buf, " ");
@@ -41,15 +40,7 @@ void run_interactive(char *av)
 		if (path == NULL)
 			exit(EXIT_FAILURE);
 
-		cmd = search_dir(path[0]); /* handle PATH */
-
-		if (cmd == NULL)
-		{
-			not_found_err(av, path[0]);
-			free(buf);
-			free_path(path);
-			exit(127);
-		}
+		cmd = check_file_in_path(buf, path, cmd, av);
 
 		if (access(cmd, F_OK | X_OK) == -1)
 		{
@@ -61,43 +52,8 @@ void run_interactive(char *av)
 			continue; /* Go to the next iteration */
 		}
 
-		child_pid = fork(); /* Create a child process */
-		if (child_pid == -1)
-		{
-			perror("Error on fork");
-			free(cmd);
-			free(buf);
-			free_path(path);
-			exit(EXIT_FAILURE); /* Exit if fork failed */
-		}
-
-		if (child_pid == 0)
-		{
-			/* We are in the child process */
-			if (execve(cmd, path, NULL) == -1)
-			{
-				perror(cmd);
-				free(cmd);
-				free(buf);
-				free_path(path);
-				exit(EXIT_FAILURE); /* Use _exit in child process */
-			}
-		}
-		else
-		{
-			/* We are in the parent process */
-			wait(&status); /* Wait for child process to finish */
-
-			if (WIFEXITED(status))
-			{
-				*_status = WEXITSTATUS(status);
-			}
-
-			free(cmd);
-			free_path(path); /* Free path after using it */
-		}
+		execute_command(buf, path, cmd);
 	}
-
 	/* This code is unreachable in the current structure, but is good practice */
 	free(buf);
 }
@@ -105,15 +61,12 @@ void run_interactive(char *av)
 void run_noninteractive(char *av)
 {
 	char *buf = NULL, *cmd = NULL, **path;
-	pid_t child_pid;
-	int get, status;
+	int get;
 	int *_status = get_status();
 	size_t n = 0; /* Allocate buffer size dynamically */
 
-	(void)av;
 	while ((get = _getline(&buf, &n, STDIN_FILENO)) != -1)
 	{
-
 		buf[strcspn(buf, "\n")] = '\0'; /* Remove newline character */
 
 		if (isempty(buf) == -1) /* checks if the string holds spaces only */
@@ -136,15 +89,7 @@ void run_noninteractive(char *av)
 		if (path == NULL)
 			exit(EXIT_FAILURE);
 
-		cmd = search_dir(path[0]); /* handle PATH */
-
-		if (cmd == NULL)
-		{
-			not_found_err(av, path[0]);
-			free(buf);
-			free_path(path);
-			exit(127);
-		}
+		cmd = check_file_in_path(buf, path, cmd, av);
 
 		if (access(cmd, F_OK | X_OK) == -1)
 		{
@@ -154,8 +99,32 @@ void run_noninteractive(char *av)
 			free_path(path);
 			continue; /* Go to the next iteration */
 		}
+		execute_command(buf, path, cmd);
+	}
+	free(buf); /* Free buf at the end (important if getline fails) */
+}
 
-		child_pid = fork(); /* Create a child process */
+char *check_file_in_path(char *buf, char **path, char *cmd, char *av)
+{
+	cmd = search_dir(path[0]); /* handle PATH */
+
+	if (cmd == NULL)
+	{
+		not_found_err(av, path[0]);
+		free(buf);
+		free_path(path);
+		exit(127);
+	}
+	else
+		return (cmd);
+}
+
+void execute_command(char *buf, char **path, char *cmd)
+{
+	int *_status = get_status(), status;
+	pid_t child_pid;
+
+	child_pid = fork(); /* Create a child process */
 		if (child_pid == -1)
 		{
 			perror("Error on fork");
@@ -190,7 +159,5 @@ void run_noninteractive(char *av)
 			free(cmd);
 			free_path(path); /* Free path after using it */
 		}
-	}
 
-	free(buf); /* Free buf at the end (important if getline fails) */
 }
