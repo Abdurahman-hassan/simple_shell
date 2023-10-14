@@ -24,7 +24,7 @@ void run_noninteractive(char *av);
 unsigned int _strlen(char *s);
 void _env(void);
 char **split_string(char *string, char *delim);
-void free_path(char** path);
+void free_path(char **path);
 
 int my_atexit(void (*function)(void));
 void _exit(int status);
