@@ -11,6 +11,9 @@
 #include <string.h>
 #include <errno.h>
 #include <stddef.h>
+#include <dirent.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 extern char **environ;
 
@@ -26,5 +29,13 @@ void _exit(int status);
 int *get_status(void);
 int isempty(char *str);
 int _isalpha(int c);
+
+char *search_dir(char *filename);
+void not_found_err(char *av, char *cmd);
+char *_strdup(char *str);
+char *_strcpy(char *dest, char *src);
+char *_strcat(char *dest, char *src);
+char *_strchr(char *s, char c);
+int _strcmp(char *s1, char *s2);
 
 #endif /* SIMPLE_SHELL_MAIN_H */

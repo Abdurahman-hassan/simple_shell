@@ -18,24 +18,226 @@ unsigned int _strlen(char *s)
 }
 
 /**
+ * _strcpy - copies the string pointed to by src,
+ *           including the terminating null byte (\0),
+ *           to the buffer pointed to by dest.
+ *
+ * @dest: pointer to the copied string address.
+ * @src: pointer the the source string address.
+ *
+ * Return: the pointer to dest.
+ */
+
+char *_strcpy(char *dest, char *src)
+{
+	int i = -1;
+
+	do {
+		i++;
+		dest[i] = src[i];
+	} while (src[i] != '\0');
+
+	return (dest);
+
+}
+
+/**
+ * _strcat - appends the src string to the dest string.
+ *
+ * @dest: the string to add new string at the end of it.
+ *
+ * @src: the new string to be added.
+ *
+ * Return: a pointer to the resulting string dest.
+ */
+
+char *_strcat(char *dest, char *src)
+{
+	int i = 0, j;
+
+	while (dest[i] != '\0')
+	{
+		i++;
+	}
+
+	j = i;
+
+	while (*src != '\0')
+	{
+		dest[j] = *src;
+		src++;
+		j++;
+	}
+
+	return (dest);
+}
+
+/**
+ * _strchr - a function that locates a character in a string.
+ *
+ * @s: the string.
+ * @c: the character to be searched.
+ *
+ * Return: a pointer to the first occurrence of the character c in the string s
+ *		if c found, or NULL if the character is not found.
+ */
+
+char *_strchr(char *s, char c)
+{
+	int i = -1;
+
+	do {
+		i++;
+		if (s[i] == c)
+			return (&s[i]);
+	} while (s[i] != '\0');
+
+	return ('\0');
+}
+
+/**
+ * _strcmp - compares two strings.
+ *
+ * @s1: first string.
+ *
+ * @s2: second string.
+ *
+ * Return: 0 if s1 equals s2.
+ *         positive number if s1 greater than s2.
+ *         negative number if s1 less than s2.
+ */
+
+int _strcmp(char *s1, char *s2)
+{
+	int i = 0;
+
+	while (s1[i] != '\0')
+	{
+		if (s1[i] != s2[i])
+			break;
+
+		i++;
+	}
+
+	return (s1[i] - s2[i]);
+}
+
+/**
+ * _strdup - a function that returns a pointer to a newly allocated space
+ * in memory, which contains a copy of the string given as a parameter.
+ *
+ * @str: the string to be copied.
+ *
+ * Return: a pointer to the duplicated string, or NULL if insufficient memory
+ * was available or str = NULL.
+ */
+
+char *_strdup(char *str)
+{
+	char *s;
+	unsigned int len = 0, i = 0;
+
+	if (str == NULL)
+		return (NULL);
+
+	while (str[i] != '\0')
+	{
+		len++;
+		i++;
+	}
+
+	s = malloc((len + 1) * sizeof(char));
+
+	if (s == NULL)
+		return (NULL);
+
+	for (i = 0; i < len; i++)
+	{
+		s[i] = str[i];
+	}
+
+    s[i] = '\0';
+
+	return (s);
+}
+
+/**
  * split_string - A function that splits a string into words.
  * Return: An array of words.
  */
 void _env(void)
 {
     int i = 0;
-    extern char **environ;
 
-    while (environ[i] != NULL)
+    while (environ && environ[i])
     {
-        printf("%s\n", environ[i]);
+        write(STDOUT_FILENO, environ[i], _strlen(environ[i]));
+		write(STDOUT_FILENO, "\n", 1);
         i++;
     }
 }
 
+char *search_dir(char *filename)
+{
+    struct stat st;
+    int i = 0;
+    char *path = getenv("PATH");
+    char **dir = NULL, *file_path = NULL;
+    size_t dir_len, file_len;
+
+    if (!filename || (path && _strcmp(path, "") == 0))
+    {
+        return (NULL);
+    }
+
+    if (_strchr(filename, '/') && stat(filename, &st) == 0)
+    {
+        file_path = _strdup(filename);
+        return (file_path);
+    }
+
+    if (!path)
+        return (NULL);
+
+    file_len = _strlen(filename);
+    dir = split_string(path, ":");
+
+    while (dir && dir[i])
+	{
+        dir_len = _strlen(dir[i]);
+        file_path = malloc(sizeof(char) * (dir_len + file_len + 2));
+
+        _strcpy(file_path, dir[i]);
+        _strcpy(file_path + dir_len, "/");
+        _strcpy(file_path + dir_len + 1, filename);
+
+		if (stat(file_path, &st) == 0)
+		{
+			free_path(dir);
+			return (file_path);
+		}
+		else
+		{
+			free(file_path);
+			i++;
+		}
+	}
+
+	free_path(dir);
+    return (NULL);
+}
+
+void not_found_err(char *av, char *cmd)
+{
+	write(STDERR_FILENO, av, _strlen(av));
+	write(STDERR_FILENO, ": 1: ", 5);
+	write(STDERR_FILENO, cmd, _strlen(cmd));
+	write(STDERR_FILENO, ": ", 2);
+	write(STDERR_FILENO, "not found\n", 10);
+}
+
 char **split_string(char *string, char *delim)
 {
-
     int i, count, index;
     char *token, *copy, **array;
 
@@ -46,7 +248,7 @@ char **split_string(char *string, char *delim)
     }
 
     /*Make a copy of the string to avoid modifying the original*/
-    copy = strdup(string);
+    copy = _strdup(string);
 
     /*Check if the allocation succeeded*/
     if (copy == NULL)
@@ -71,7 +273,7 @@ char **split_string(char *string, char *delim)
     }
 
     /*Restore the copy of the string*/
-    strcpy(copy, string); /*restore initial string modified by strtok*/
+    _strcpy(copy, string); /*restore initial string modified by strtok*/
 
     /*Allocate an array of pointers to store the words*/
     array = malloc((count + 1) * sizeof(char *));
@@ -89,7 +291,7 @@ char **split_string(char *string, char *delim)
     while (token != NULL)
     {
         /*Allocate memory for each word and copy it*/
-        array[index] = strdup(token);
+        array[index] = _strdup(token);
 
         /*Check if the allocation succeeded*/
         if (array[index] == NULL)
@@ -163,6 +365,7 @@ void free_path(char** path)
 	}
 	free(path); /* then free the array */
 }
+
 
 static void (*atexit_functions[ATEXIT_MAX])(void);
 static int atexit_count = 0;
