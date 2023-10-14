@@ -23,12 +23,6 @@ void run_interactive(char *av)
 		if (isempty(buf) == -1) /* checks if the string holds spaces only */
 			continue;
 
-		if (strcmp(buf, "exit") == 0)
-		{
-			free(buf);
-			exit(*_status); /* Exit command */
-		}
-
 		if (strcmp(buf, "env") == 0)
 		{
 			_env();
@@ -39,6 +33,12 @@ void run_interactive(char *av)
 
 		if (path == NULL)
 			exit(EXIT_FAILURE);
+
+		if (strcmp(path[0], "exit") == 0)
+		{
+			free(buf);
+			exit_(path, av);
+		}
 
 		cmd = check_file_in_path(buf, path, cmd, av);
 
@@ -72,12 +72,6 @@ void run_noninteractive(char *av)
 		if (isempty(buf) == -1) /* checks if the string holds spaces only */
 			continue;
 
-		if (_strcmp(buf, "exit") == 0)
-		{
-			free(buf);
-			exit(*_status); /* Exit command */
-		}
-
 		if (_strcmp(buf, "env") == 0)
 		{
 			_env();
@@ -87,7 +81,13 @@ void run_noninteractive(char *av)
 		path = split_string(buf, " ");
 
 		if (path == NULL)
-			exit(EXIT_FAILURE);
+			exit(*_status);
+
+		if (strcmp(path[0], "exit") == 0)
+		{
+			free(buf);
+			exit_(path, av);
+		}
 
 		cmd = check_file_in_path(buf, path, cmd, av);
 
@@ -159,5 +159,4 @@ void execute_command(char *buf, char **path, char *cmd)
 			free(cmd);
 			free_path(path); /* Free path after using it */
 		}
-
 }
