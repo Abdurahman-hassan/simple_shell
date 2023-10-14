@@ -40,27 +40,6 @@ char *_strdup(char *str)
 }
 
 /**
- * _env - Prints the environment variables to standard output.
- *
- * This function iterates through the environment
- * variables and prints each one to
- * the standard output, followed by a newline character.
- * It uses the `environ` variable
- * to access the environment variables.
- */
-void _env(void)
-{
-	int i = 0;
-
-	while (environ && environ[i])
-	{
-		write(STDOUT_FILENO, environ[i], _strlen(environ[i]));
-		write(STDOUT_FILENO, "\n", 1);
-		i++;
-	}
-}
-
-/**
  * search_dir - Searches for a file in directories
  * listed in PATH, returning the full
  * path if found. This function checks
@@ -120,24 +99,41 @@ char *search_dir(char *filename)
 }
 
 /**
- * not_found_err - Prints a "not found"
- * error message to standard error.
- * This function is used to generate
- * a user-friendly error message indicating that a
- * specified command or file was not found.
- * It prints the program's name, the name of
- * the command or file, and an explanatory
- * "not found" message to the standard error.
- * @av: The program's name.
- * @cmd: The command or file not found.
+ * count_tokens - Counts the number of tokens in a string using a delimiter.
+ *
+ * @string: The input string to count tokens in.
+ * @delim:  The delimiter used to split the string.
+ *
+ * This function takes an input string and a delimiter and counts the number of
+ * tokens (substrings) that would be created by splitting the string based on
+ * the delimiter.
+ *
+ * Returns: The number of tokens in the string.
  */
-void not_found_err(char *av, char *cmd)
-{
-	write(STDERR_FILENO, av, _strlen(av));
-	write(STDERR_FILENO, ": 1: ", 5);
-	write(STDERR_FILENO, cmd, _strlen(cmd));
-	write(STDERR_FILENO, ": ", 2);
-	write(STDERR_FILENO, "not found\n", 10);
+static int count_tokens(char *string, char *delim) {
+    int count = 0;
+    char *token, *copy;
+
+    if (string == NULL || delim == NULL)
+        return 0;
+
+    /* Make a copy of the string to avoid modifying the original */
+    copy = _strdup(string);
+
+    if (copy == NULL)
+        return 0;
+
+    /* Tokenize the copy and count tokens */
+    token = strtok(copy, delim);
+    while (token != NULL) {
+        count++;
+        token = strtok(NULL, delim);
+    }
+
+    /* Free the copy of the string */
+    free(copy);
+
+    return count;
 }
 
 /**

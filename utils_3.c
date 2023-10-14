@@ -79,23 +79,6 @@ void _exit(int status)
 }
 
 /**
- * get_status - Retrieves a pointer to a static
- * integer representing the program's status.
- * This function returns a pointer to a static
- * integer that typically stores the exit
- * status of the program. It can be used to access
- * and modify the program's status
- * across different parts of the code.
- * Return: A pointer to the program's status integer.
- */
-int *get_status(void)
-{
-	static int _status = EXIT_SUCCESS;
-
-	return (&_status);
-}
-
-/**
  * _getline - Reads a line from a file descriptor
  * and stores it in a dynamically allocated buffer.
  * @lineptr: A pointer to a pointer that will
