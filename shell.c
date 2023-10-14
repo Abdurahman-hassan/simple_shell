@@ -33,7 +33,7 @@ void run_interactive(char *av)
 	while (1) {
 		write(STDOUT_FILENO, "($) ", 4); /* Shell prompt */
 
-		get = getline(&buf, &n, stdin);
+		get = _getline(&buf, &n, STDIN_FILENO);
 		if (get == -1) {
 			write(STDOUT_FILENO, "\n", 1);
 			free(buf);
@@ -122,7 +122,8 @@ void run_noninteractive(char *av)
 	int *_status = get_status();
 	size_t n = 0; /* Allocate buffer size dynamically */
 
-	while ((get = getline(&buf, &n, stdin)) != -1) {
+	(void)av;
+	while ((get = _getline(&buf, &n, STDIN_FILENO)) != -1) {
 
 		buf[strcspn(buf, "\n")] = '\0'; /* Remove newline character */
 
