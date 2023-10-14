@@ -49,7 +49,6 @@ void run_interactive(char *av)
 			free(buf);
 			free_path(path);
 			continue; /* Go to the next iteration */
-			continue; /* Go to the next iteration */
 		}
 
 		execute_command(buf, path, cmd);
