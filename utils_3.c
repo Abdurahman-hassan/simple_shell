@@ -79,57 +79,34 @@ void _exit(int status)
 }
 
 /**
- * _getline - Reads a line from a file descriptor
- * and stores it in a dynamically allocated buffer.
+ * _read_chars - Reads characters from a file descriptor.
  * @lineptr: A pointer to a pointer that will
  * hold the address of the allocated buffer.
  * @n: A pointer to the size of the allocated buffer.
- * @fd: The file descriptor from which to read the line.
+ * @fd: The file descriptor from which to read characters.
  *
- * This function reads a line of text from
- * the specified file descriptor and stores it in a
- * dynamically allocated buffer. It automatically
- * reallocates the buffer if necessary to
- * accommodate longer lines. The function returns
- * the number of characters read, excluding
- * the null terminator, or -1 on error.
- * Return: The number of characters read
- * (excluding the null terminator), or -1 on error.
+ * This function reads characters from the specified file descriptor and stores
+ * them in a dynamically allocated buffer.
+ * It automatically reallocates the buffer
+ * if necessary to accommodate more characters. The function returns the number
+ * of characters read, or -1 on error.
+ *
+ * Return: The number of characters read, or -1 on error.
  */
-ssize_t _getline(char **lineptr, size_t *n, int fd)
+ssize_t _read_chars(char **lineptr, size_t *n, int fd)
 {
 	size_t pos = 0;
 	ssize_t bytesRead;
 	char c;
 
-	/* Validate input parameters */
-	if (lineptr == NULL || n == NULL || fd < 0)
-	{
-		errno = EINVAL; /* Invalid argument */
-		return (-1);
-	}
-
-	if (*lineptr == NULL)
-	{
-		*lineptr = malloc(INITIAL_BUFFER_SIZE);
-		if (*lineptr == NULL)
-		{
-			errno = ENOMEM;
-			/* Cannot allocate memory */
-			return (-1);
-		}
-		*n = INITIAL_BUFFER_SIZE;
-	}
-
 	while ((bytesRead = read(fd, &c, 1)) > 0)
 	{
-		/* Ensure buffer is large enough */
-		/* reallocating as necessary */
+		/* Ensure buffer is large enough, reallocating as necessary */
 		if (pos + 1 >= *n)
 		{
 			size_t new_size = *n * 2;
-			char *new_ptr = realloc(*lineptr,
-					new_size);
+			char *new_ptr = realloc(*lineptr, new_size);
+
 			if (new_ptr == NULL)
 			{
 				errno = ENOMEM;
@@ -154,9 +131,61 @@ ssize_t _getline(char **lineptr, size_t *n, int fd)
 		return (-1); /* EOF or error */
 	}
 
-	(*lineptr)[pos] = '\0'; /* Null-terminate the string */
-
-	/* Return the number of characters read*/
-	/* not including the null terminator */
 	return (pos);
+}
+
+/**
+ * _getline - Reads a line from a file descriptor
+ * and stores it in a dynamically allocated buffer.
+ * @lineptr: A pointer to a pointer that will
+ * hold the address of the allocated buffer.
+ * @n: A pointer to the size of the allocated buffer.
+ * @fd: The file descriptor from which to read the line.
+ *
+ * This function reads a line of text from
+ * the specified file descriptor and stores it in a
+ * dynamically allocated buffer. It automatically
+ * reallocates the buffer if necessary to
+ * accommodate longer lines. The function returns
+ * the number of characters read, excluding
+ * the null terminator, or -1 on error.
+ * Return: The number of characters read
+ * (excluding the null terminator), or -1 on error.
+ */
+ssize_t _getline(char **lineptr, size_t *n, int fd)
+{
+	ssize_t totalChars = 0, charsRead;
+
+	/* Validate input parameters */
+	if (lineptr == NULL || n == NULL || fd < 0)
+	{
+		errno = EINVAL; /* Invalid argument */
+		return (-1);
+	}
+
+	if (*lineptr == NULL)
+	{
+		*lineptr = malloc(INITIAL_BUFFER_SIZE);
+		if (*lineptr == NULL)
+		{
+			errno = ENOMEM;
+			/* Cannot allocate memory */
+			return (-1);
+		}
+		*n = INITIAL_BUFFER_SIZE;
+	}
+
+	charsRead = _read_chars(lineptr, n, fd);
+	if (charsRead == -1)
+	{
+		/* Handle error */
+		return (-1);
+	}
+
+	totalChars += charsRead;
+
+	/* Null-terminate the string */
+	(*lineptr)[totalChars] = '\0';
+
+	return (totalChars);
 }

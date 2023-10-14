@@ -59,9 +59,7 @@ char *search_dir(char *filename)
 	size_t dir_len, file_len;
 
 	if (!filename || (path && _strcmp(path, "") == 0))
-	{
 		return (NULL);
-	}
 
 	if (_strchr(filename, '/') && stat(filename, &st) == 0)
 	{
@@ -74,7 +72,6 @@ char *search_dir(char *filename)
 
 	file_len = _strlen(filename);
 	dir = split_string(path, ":");
-
 	while (dir && dir[i])
 	{
 		dir_len = _strlen(dir[i]);
@@ -82,7 +79,6 @@ char *search_dir(char *filename)
 		_strcpy(file_path, dir[i]);
 		_strcpy(file_path + dir_len, "/");
 		_strcpy(file_path + dir_len + 1, filename);
-
 		if (stat(file_path, &st) == 0)
 		{
 			free_path(dir);
@@ -108,32 +104,34 @@ char *search_dir(char *filename)
  * tokens (substrings) that would be created by splitting the string based on
  * the delimiter.
  *
- * Returns: The number of tokens in the string.
+ * Return: The number of tokens in the string.
  */
-static int count_tokens(char *string, char *delim) {
-    int count = 0;
-    char *token, *copy;
+int count_tokens(char *string, char *delim)
+{
+	int count = 0;
+	char *token, *copy;
 
-    if (string == NULL || delim == NULL)
-        return 0;
+	if (string == NULL || delim == NULL)
+		return (0);
 
-    /* Make a copy of the string to avoid modifying the original */
-    copy = _strdup(string);
+	/* Make a copy of the string to avoid modifying the original */
+	copy = _strdup(string);
 
-    if (copy == NULL)
-        return 0;
+	if (copy == NULL)
+		return (0);
 
-    /* Tokenize the copy and count tokens */
-    token = strtok(copy, delim);
-    while (token != NULL) {
-        count++;
-        token = strtok(NULL, delim);
-    }
+	/* Tokenize the copy and count tokens */
+	token = strtok(copy, delim);
+	while (token != NULL)
+	{
+		count++;
+		token = strtok(NULL, delim);
+	}
 
-    /* Free the copy of the string */
-    free(copy);
+	/* Free the copy of the string */
+	free(copy);
 
-    return count;
+	return (count);
 }
 
 /**
@@ -156,77 +154,44 @@ static int count_tokens(char *string, char *delim) {
  */
 char **split_string(char *string, char *delim)
 {
-	int i, count, index;
-	char *token, *copy, **array;
+	char **array;
+	char *token, *copy;
+	int i = 0, j, count;
 
-	/*Check if the string and the delimiter are valid*/
-	if (string == NULL || delim == NULL)
-	{
+	count = count_tokens(string, delim);
+	if (count == 0)
 		return (NULL);
-	}
-	/*Make a copy of the string */
-	/* to avoid modifying the original*/
+
+	array = malloc((count + 1) * sizeof(char *));
+	if (array == NULL)
+		return (NULL);
+	/* Make a copy of the string to avoid modifying the original */
 	copy = _strdup(string);
-	/*Check if the allocation succeeded*/
 	if (copy == NULL)
 	{
+		free(array);
 		return (NULL);
 	}
-	/*Count the number of words in the string*/
-	count = 0;
+	/* Tokenize the copy and store tokens in the array */
 	token = strtok(copy, delim);
 	while (token != NULL)
 	{
-		count++;
-		token = strtok(NULL, delim);
-	}
-	/*Check if the string is empty*/
-	if (count == 0)
-	{
-		free(copy);
-		return (NULL);
-	}
-	/*Restore the copy of the string*/
-	_strcpy(copy, string);
-	/*restore initial string modified by strtok*/
-	/*Allocate an array of pointers to store the words*/
-	array = malloc((count + 1) * sizeof(char *));
-
-	/*Check if the allocation succeeded*/
-	if (array == NULL)
-	{
-		free(copy);
-		return (NULL);
-	}
-	/*Split the string and store the words in the array*/
-	index = 0;
-	token = strtok(copy, delim);
-	while (token != NULL)
-	{
-		/*Allocate memory for each word and copy it*/
-		array[index] = _strdup(token);
-		/*Check if the allocation succeeded*/
-		if (array[index] == NULL)
+		array[i] = _strdup(token);
+		if (array[i] == NULL)
 		{
-			/*Free the allocated memory so far*/
-			for (i = 0; i < index; i++)
-			{
-				free(array[i]);
-			}
+			/* Free allocated memory if an error occurs */
+			for (j = 0; j < i; j++)
+				free(array[j]);
 			free(array);
 			free(copy);
 			return (NULL);
 		}
-
-		/*Move to the next word*/
-		index++;
+		i++;
 		token = strtok(NULL, delim);
 	}
-	/*Terminate the array with a NULL pointer*/
-	array[index] = NULL;
-	/*Free the copy of the string*/
+	/* Terminate the array with a NULL pointer */
+	array[i] = NULL;
+	/* Free the copy of the string */
 	free(copy);
-	free(token);
-	/*Return the array of words*/
 	return (array);
 }

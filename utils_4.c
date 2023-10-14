@@ -55,9 +55,9 @@ int _isalpha(int c)
  */
 int *get_status(void)
 {
-    static int _status = EXIT_SUCCESS;
+	static int _status = EXIT_SUCCESS;
 
-    return (&_status);
+	return (&_status);
 }
 
 /**
@@ -71,14 +71,14 @@ int *get_status(void)
  */
 void _env(void)
 {
-    int i = 0;
+	int i = 0;
 
-    while (environ && environ[i])
-    {
-        write(STDOUT_FILENO, environ[i], _strlen(environ[i]));
-        write(STDOUT_FILENO, "\n", 1);
-        i++;
-    }
+	while (environ && environ[i])
+	{
+		write(STDOUT_FILENO, environ[i], _strlen(environ[i]));
+		write(STDOUT_FILENO, "\n", 1);
+		i++;
+	}
 }
 
 /**
@@ -95,9 +95,9 @@ void _env(void)
  */
 void not_found_err(char *av, char *cmd)
 {
-    write(STDERR_FILENO, av, _strlen(av));
-    write(STDERR_FILENO, ": 1: ", 5);
-    write(STDERR_FILENO, cmd, _strlen(cmd));
-    write(STDERR_FILENO, ": ", 2);
-    write(STDERR_FILENO, "not found\n", 10);
+	write(STDERR_FILENO, av, _strlen(av));
+	write(STDERR_FILENO, ": 1: ", 5);
+	write(STDERR_FILENO, cmd, _strlen(cmd));
+	write(STDERR_FILENO, ": ", 2);
+	write(STDERR_FILENO, "not found\n", 10);
 }

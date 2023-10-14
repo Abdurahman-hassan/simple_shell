@@ -23,14 +23,18 @@ void run_interactive(char *av);
 void run_noninteractive(char *av);
 unsigned int _strlen(char *s);
 void _env(void);
-char **split_string(char *string, char *delim);
-void free_path(char **path);
 
+char **split_string(char *string, char *delim);
+int count_tokens(char *string, char *delim);
+
+void free_path(char **path);
 int my_atexit(void (*function)(void));
 void _exit(int status);
 int *get_status(void);
 int isempty(char *str);
 int _isalpha(int c);
+
+ssize_t _read_chars(char **lineptr, size_t *n, int fd);
 ssize_t _getline(char **lineptr, size_t *n, int fd);
 
 char *search_dir(char *filename);
