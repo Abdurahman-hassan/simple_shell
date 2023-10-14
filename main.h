@@ -59,6 +59,12 @@ int _isalpha(int c);
 void not_found_err(char *av, char *cmd);
 void _env(void);
 
+/* ============== UTILS_5 ================ */
+
+void exit_(char **path, char *av);
+int is_string(char *str);
+int _isdigit(int c);
+void illegal_number_err(char *exit_arg, char *av);
 
 void execute_command(char *buf, char **path, char *cmd);
 char *check_file_in_path(char *buf, char **path, char *cmd, char *av);
