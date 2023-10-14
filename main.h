@@ -4,6 +4,7 @@
 /* Assuming a max of 32 functions that can be registered with atexit. */
 #define ATEXIT_MAX 32
 #define INITIAL_BUFFER_SIZE 128
+#define MAX_CMD_LENGTH 1024
 
 #include <stdbool.h>
 #include <stdio.h>
