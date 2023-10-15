@@ -1,6 +1,41 @@
 #include "main.h"
 
 /**
+ *  _strncmp - Compares the length of two strings.
+ * 
+ * @firse_str: The first string.
+ * @second_str: The second string.
+ * 
+ * Return: If the lengths of the two strings are the same, return 0;
+ * otherwise, return the difference between them.
+ */
+
+int _strncmp(const char *first_str, const char *second_str, size_t n)
+{
+	size_t i = 0;
+	int res = 0;
+
+	while (i < n)
+	{
+		if (first_str[i] < second_str[i])
+		{
+			res = first_str[i] - second_str[i]; 
+			break;
+		}
+		else if (first_str[i] > second_str[i])
+		{
+			res = first_str[i] - second_str[i];
+			break;
+		}
+		else if (first_str[i] == '\0' || second_str[i] == '\0')
+			break;
+		i++;
+	}
+
+	return (res); 
+}
+
+/**
  * _strdup - a function that returns a pointer
  * to a newly allocated space
  * in memory, which contains a copy of the
@@ -10,6 +45,7 @@
  * or NULL if insufficient memory
  * was available or str = NULL.
  */
+
 char *_strdup(char *str)
 {
 	char *s;
@@ -50,6 +86,7 @@ char *_strdup(char *str)
  * @filename: The file to search for.
  * Return: NULL if not found.
  */
+
 char *search_dir(char *filename)
 {
 	struct stat st;
@@ -106,6 +143,7 @@ char *search_dir(char *filename)
  *
  * Return: The number of tokens in the string.
  */
+
 int count_tokens(char *string, char *delim)
 {
 	int count = 0;
@@ -152,6 +190,7 @@ int count_tokens(char *string, char *delim)
  * or NULL if memory allocation fails
  *          or if the input string is empty.
  */
+
 char **split_string(char *string, char *delim)
 {
 	char **array;

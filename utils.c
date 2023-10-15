@@ -5,6 +5,7 @@
  * @s: A pointer of the string.
  * Return: The length of the string.
  */
+
 unsigned int _strlen(char *s)
 {
 	unsigned int len = 0;
@@ -23,6 +24,7 @@ unsigned int _strlen(char *s)
  * @src: pointer the the source string address.
  * Return: the pointer to dest.
  */
+
 char *_strcpy(char *dest, char *src)
 {
 	int i = -1;
@@ -42,6 +44,7 @@ char *_strcpy(char *dest, char *src)
  * @src: the new string to be added.
  * Return: a pointer to the resulting string dest.
  */
+
 char *_strcat(char *dest, char *src)
 {
 	int i = 0, j;
@@ -70,6 +73,7 @@ char *_strcat(char *dest, char *src)
  * Return: a pointer to the first occurrence of the character c in the string s
  *		if c found, or NULL if the character is not found.
  */
+
 char *_strchr(char *s, char c)
 {
 	int i = -1;
@@ -94,6 +98,7 @@ char *_strchr(char *s, char c)
  *         positive number if s1 greater than s2.
  *         negative number if s1 less than s2.
  */
+
 int _strcmp(char *s1, char *s2)
 {
 	int i = 0;
