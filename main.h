@@ -77,9 +77,9 @@ char *_getenv(const char *name);
 
 /* ============== UTILS_7 ================ */
 
+size_t _strcspn(const char *str, const char *reject);
 int allocate_environ(void);
 char *check_file_in_path(char *buf, char **path, char *cmd, char *av);
 void execute_command(char *buf, char **path, char *cmd);
-
 
 #endif /* SIMPLE_SHELL_MAIN_H */
