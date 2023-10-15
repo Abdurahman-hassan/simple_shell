@@ -18,7 +18,7 @@ void interactive_mode(char *av)
 			exit(*_status); /* Exiting after EOF or error */
 		}
 
-		buf[strcspn(buf, "\n")] = '\0'; /* Remove newline character */
+		buf[_strcspn(buf, "\n")] = '\0'; /* Remove newline character */
 
 		if (isempty(buf) == -1) /* checks if the string holds spaces only */
 			continue;
@@ -91,7 +91,7 @@ void non_interactive_mode(char *av)
 
 	while ((get = _getline(&buf, &n, STDIN_FILENO)) != -1)
 	{
-		buf[strcspn(buf, "\n")] = '\0'; /* Remove newline character */
+		buf[_strcspn(buf, "\n")] = '\0'; /* Remove newline character */
 
 		if (isempty(buf) == -1) /* checks if the string holds spaces only */
 			continue;
