@@ -1,11 +1,10 @@
 #include "main.h"
 
 /**
- *  _strncmp - Compares the length of two strings.
- * 
- * @firse_str: The first string.
+ * _strncmp - Compares the length of two strings.
+ * @first_str: The first string.
  * @second_str: The second string.
- * 
+ * @n: the size of chars
  * Return: If the lengths of the two strings are the same, return 0;
  * otherwise, return the difference between them.
  */
@@ -19,7 +18,7 @@ int _strncmp(const char *first_str, const char *second_str, size_t n)
 	{
 		if (first_str[i] < second_str[i])
 		{
-			res = first_str[i] - second_str[i]; 
+			res = first_str[i] - second_str[i];
 			break;
 		}
 		else if (first_str[i] > second_str[i])
@@ -32,7 +31,7 @@ int _strncmp(const char *first_str, const char *second_str, size_t n)
 		i++;
 	}
 
-	return (res); 
+	return (res);
 }
 
 /**

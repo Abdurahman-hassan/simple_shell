@@ -2,10 +2,8 @@
 
 /**
  * exit_ - a function that handle the exit command status.
- * 
  * @path: an array holds the commands enterd by user.
  * @av: Tha program's name.
- * 
  * Description: This function handles the built-in Linux command "exit".
  * It exits the shell with the last exit status provided to it as an argument.
  */
@@ -23,7 +21,7 @@ void exit_(char **path, char *av)
 			free_path(environ);
 			exit(2);
 		}
-		
+
 		*_status = _atoi(path[1]);
 	}
 
@@ -34,9 +32,7 @@ void exit_(char **path, char *av)
 
 /**
  * is_string - Checks if a string contains a digit or not.
- *
  * @str: The string to be checked.
- * 
  * Return: If the string does not contain any digits,
  * return 1; otherwise, return -1.
  */
@@ -73,15 +69,12 @@ int _isdigit(int c)
 
 /**
  * illegal_number_err - Print an error to the stderr.
- * 
  * @exit_arg: The last invalid exit argument.
  * @av: The program's name.
- * 
  * Description: When a user enters an invalid exit argument,
  * such as a negative value or a string, the function displays
  * an error message on the screen.
  */
-
 void illegal_number_err(char *exit_arg, char *av)
 {
 	write(STDERR_FILENO, av, _strlen(av));

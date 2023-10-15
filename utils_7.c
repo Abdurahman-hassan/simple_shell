@@ -3,15 +3,11 @@
 /**
  * _strcspn - Calculate the length of the first segment of a string that
  * does not contain any characters from another string.
- * 
  * @str: The first string.
  * @reject: The second string.
- * 
  * Return: The number of characters in the first string that do not
  * appear in the second string.
-
  */
-
 size_t _strcspn(const char *str, const char *reject)
 {
 	size_t len = 0;
@@ -19,11 +15,14 @@ size_t _strcspn(const char *str, const char *reject)
 	while (*str != '\0')
 	{
 		if (strchr(reject, *str) != NULL)
+		{
 			break;
+		}
 		else
+		{
 			len++;
-
-		str++; 
+		}
+		str++;
 	}
 
 	return (len);
@@ -66,15 +65,12 @@ int allocate_environ(void)
 
 /**
  * check_file_in_path - Checks if the file exist in path or not.
- *
  * @buf: a buffer holds the line that passed to the stdin.
  * @path: an array holds the commands enterd by user.
  * @cmd: The command to be executed.
  * @av: The program's name.
- *
- * Description: Check the PATH environment variable to see if the
+ * check the PATH environment variable to see if the
  * "cmd" entered by the user exists or not.
- *
  * Return: The full path of the command, if it's found in the PATH
  * or exit if it's not present.
  */
