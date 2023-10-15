@@ -20,13 +20,12 @@
 
 extern char **environ;
 
-
 /* ============ INTERACTIVE FUNCTION ============== */
-void run_interactive(char *av);
+void interactive_mode(char *av);
 
 /* ============ NON_INTERACTIVE FUNCTION ============== */
 
-void run_noninteractive(char *av);
+void non_interactive_mode(char *av);
 
 /* ===========  UTILS ============ */
 
@@ -38,6 +37,7 @@ int _strcmp(char *s1, char *s2);
 
 /* =============  UTILS_2 ============ */
 
+int _strncmp(const char *first_str, const char *second_str, size_t n);
 char *_strdup(char *str);
 char *search_dir(char *filename);
 int count_tokens(char *string, char *delim);
@@ -65,8 +65,21 @@ void exit_(char **path, char *av);
 int is_string(char *str);
 int _isdigit(int c);
 void illegal_number_err(char *exit_arg, char *av);
+int _atoi(char *s);
 
-void execute_command(char *buf, char **path, char *cmd);
+/* ============== UTILS_6 ================ */
+
+int _setenv(const char *name, const char *value, int overwrite);
+int _unsetenv(const char *name);
+char *concat(char *first_str, char *delim, char *second_str);
+int get_var_index(char *name, char *val);
+char *_getenv(const char *name);
+
+/* ============== UTILS_7 ================ */
+
+int allocate_environ(void);
 char *check_file_in_path(char *buf, char **path, char *cmd, char *av);
+void execute_command(char *buf, char **path, char *cmd);
+
 
 #endif /* SIMPLE_SHELL_MAIN_H */
