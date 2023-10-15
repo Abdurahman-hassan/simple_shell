@@ -1,6 +1,6 @@
 #include "main.h"
 
-void run_interactive(char *av)
+void interactive_mode(char *av)
 {
 	char *buf = NULL, *cmd = NULL, **path = NULL;
 	int get;
@@ -23,18 +23,44 @@ void run_interactive(char *av)
 		if (isempty(buf) == -1) /* checks if the string holds spaces only */
 			continue;
 
-		if (strcmp(buf, "env") == 0)
-		{
+		if (_strcmp(buf, "env") == 0)
 			_env();
-			/*continue;*/ /* Skip the rest of the loop for 'env' */
-		}
 
 		path = split_string(buf, " ");
 
 		if (path == NULL)
 			exit(EXIT_FAILURE);
 
-		if (strcmp(path[0], "exit") == 0)
+		if (_strcmp(path[0], "setenv") == 0)
+		{
+			if (path[1] != NULL && path[2] != NULL)
+			{
+				if (_setenv(path[1], path[2], 1) == -1)
+				{
+					perror("Error");
+					free(buf);
+					free_path(path);
+					exit(*_status);
+				}
+			}
+			free_path(path);
+			continue;
+		}
+
+		if (_strcmp(path[0], "unsetenv") == 0)
+		{
+			if (_unsetenv(path[1]) == -1)
+			{
+				perror("Error");
+				free(buf);
+				free_path(path);
+				exit(*_status);
+			}
+			free_path(path);
+			continue;
+		}
+
+		if (_strcmp(path[0], "exit") == 0)
 		{
 			free(buf);
 			exit_(path, av);
@@ -50,14 +76,13 @@ void run_interactive(char *av)
 			free_path(path);
 			continue; /* Go to the next iteration */
 		}
-
 		execute_command(buf, path, cmd);
 	}
 	/* This code is unreachable in the current structure, but is good practice */
 	free(buf);
 }
 
-void run_noninteractive(char *av)
+void non_interactive_mode(char *av)
 {
 	char *buf = NULL, *cmd = NULL, **path;
 	int get;
@@ -82,10 +107,42 @@ void run_noninteractive(char *av)
 		if (path == NULL)
 			exit(*_status);
 
-		if (strcmp(path[0], "exit") == 0)
+		if (_strcmp(path[0], "exit") == 0)
 		{
 			free(buf);
 			exit_(path, av);
+		}
+
+		if (_strcmp(path[0], "setenv") == 0)
+		{
+			if (path[1] != NULL && path[2] != NULL)
+			{
+				if (_setenv(path[1], path[2], 1) == -1)
+				{
+					perror("Error");
+					free(buf);
+					free_path(path);
+					exit(*_status);
+				}
+			}
+			free_path(path);
+			continue;
+		}
+
+		if (_strcmp(path[0], "unsetenv") == 0)
+		{
+			if (path[1] != NULL)
+			{
+				if (_unsetenv(path[1]) == -1)
+				{
+					perror("Error");
+					free(buf);
+					free_path(path);
+					exit(*_status);
+				}
+			}
+			free_path(path);
+			continue;
 		}
 
 		cmd = check_file_in_path(buf, path, cmd, av);
@@ -101,61 +158,4 @@ void run_noninteractive(char *av)
 		execute_command(buf, path, cmd);
 	}
 	free(buf); /* Free buf at the end (important if getline fails) */
-}
-
-char *check_file_in_path(char *buf, char **path, char *cmd, char *av)
-{
-	cmd = search_dir(path[0]); /* handle PATH */
-
-	if (cmd == NULL)
-	{
-		not_found_err(av, path[0]);
-		free(buf);
-		free_path(path);
-		exit(127);
-	}
-	else
-		return (cmd);
-}
-
-void execute_command(char *buf, char **path, char *cmd)
-{
-	int *_status = get_status(), status;
-	pid_t child_pid;
-
-	child_pid = fork(); /* Create a child process */
-		if (child_pid == -1)
-		{
-			perror("Error on fork");
-			free(cmd);
-			free(buf);
-			free_path(path);
-			exit(EXIT_FAILURE); /* Exit if fork failed */
-		}
-
-		if (child_pid == 0)
-		{
-			/* We are in the child process */
-			if (execve(cmd, path, environ) == -1)
-			{
-				perror(cmd);
-				free(cmd);
-				free(buf);
-				free_path(path);
-				exit(EXIT_FAILURE); /* Use _exit in child process */
-			}
-		}
-		else
-		{
-			/* We are in the parent process */
-			wait(&status); /* Wait for child process to finish */
-
-			if (WIFEXITED(status))
-			{
-				*_status = WEXITSTATUS(status);
-			}
-
-			free(cmd);
-			free_path(path); /* Free path after using it */
-		}
 }
