@@ -31,6 +31,9 @@ void interactive_mode(char *av)
 		if (path == NULL)
 			exit(EXIT_FAILURE);
 
+		/* Replace variables in the command */
+		replace_variables(path, _status);
+
 		if (_strcmp(path[0], "setenv") == 0)
 		{
 			if (path[1] != NULL && path[2] != NULL)
@@ -106,6 +109,9 @@ void non_interactive_mode(char *av)
 
 		if (path == NULL)
 			exit(*_status);
+
+		/* Replace variables in the command */
+		replace_variables(path, _status);
 
 		if (_strcmp(path[0], "exit") == 0)
 		{

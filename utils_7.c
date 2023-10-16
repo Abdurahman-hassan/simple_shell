@@ -143,3 +143,66 @@ void execute_command(char *buf, char **path, char *cmd)
 		free_path(path); /* Free path after using it */
 	}
 }
+
+/**
+ * replace_variables - Processes command line arguments, replacing
+ * variable patterns with their values. Handles special variables
+ * like "$$" and "$?", and replaces environment variables.
+ *
+ * @args: Null-terminated array of strings, command line arguments.
+ * Each might be an argument or a variable needing replacement.
+ *
+ * @_status: Pointer to an int, the status of the previous command.
+ * Used for replacing "$?" with the actual status.
+ *
+ * Function iterates through 'args'. If an argument starts with '$',
+ * it checks for special cases ("$" or "?"). For "$$", it's replaced
+ * with the process's PID. For "$?", replaced with '_status'.
+ * Otherwise, tries to find the environment variable and replace
+ * the argument with its value or an empty string if not found.
+ *
+ * Original strings being replaced are freed, preventing memory
+ * leaks. New strings are allocated in their place.
+ */
+void replace_variables(char **args, int *_status)
+{
+	int i, pid;
+	char *var_name, *var_value;
+
+	for (i = 0; args[i] != NULL; i++)
+	{
+		if (args[i][0] == '$')
+		{
+		/* If var_name is empty or starts with an unsupported character*/
+		/* we should treat it as a literal dollar sign.*/
+			var_name = args[i] + 1; /* Skip past the '$'*/
+			if (*var_name == '\0' ||
+					(*var_name == ' ' && var_name[1] == '\0'))
+			{
+				continue; /* Leave this argument unchanged.*/
+			}
+			else if (_strcmp(var_name, "$") == 0)
+			{
+				pid = (int)getpid(); /* Special case of $$ variable*/
+				free(args[i]);
+				args[i] = _itoa(pid);
+			}
+			else if (_strcmp(var_name, "?") == 0)
+			{
+				free(args[i]); /* Special case for the $? variable*/
+				args[i] = _itoa(*_status);
+			}
+			else
+			{
+				var_value = getenv(var_name);
+				free(args[i]);
+				if (var_value != NULL)
+				/*The variable is defined so use its value*/
+					args[i] = strdup(var_value);
+				else
+				/* The variable isn't defined use an empty string */
+					args[i] = strdup("");
+			}
+		}
+	}
+}

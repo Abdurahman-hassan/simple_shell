@@ -81,5 +81,8 @@ size_t _strcspn(const char *str, const char *reject);
 int allocate_environ(void);
 char *check_file_in_path(char *buf, char **path, char *cmd, char *av);
 void execute_command(char *buf, char **path, char *cmd);
+void replace_variables(char **args, int *status);
 
+/* ============= UTILS_8 ================= */
+char *_itoa(int value);
 #endif /* SIMPLE_SHELL_MAIN_H */
