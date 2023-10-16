@@ -63,7 +63,6 @@ char *_itoa(int value)
  *
  * Return: If successful, return 0; otherwise, return -1.
  */
-
 int change_directory(char *path, char *av)
 {
 	char cwd[PATH_MAX];
@@ -111,7 +110,6 @@ int change_directory(char *path, char *av)
  * @path: The argument provided to the cd command.
  * @av: The program's name.
  */
-
 void cd_err(char *cwd, char *path, char *av)
 {
 	write(STDOUT_FILENO, cwd, _strlen(cwd));
@@ -130,7 +128,6 @@ void cd_err(char *cwd, char *path, char *av)
  *
  * Return: If successful, return 0; otherwise, return -1.
  */
-
 int handle_old_dir(char *cwd)
 {
 	if (_getenv("OLDPWD") == NULL)
@@ -151,6 +148,7 @@ int handle_old_dir(char *cwd)
 		return (0);
 	}
 }
+
 /**
  * remove_comment - Removes the content of
  * a string after the '#' character.
