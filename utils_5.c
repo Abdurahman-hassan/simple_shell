@@ -7,7 +7,6 @@
  * Description: This function handles the built-in Linux command "exit".
  * It exits the shell with the last exit status provided to it as an argument.
  */
-
 void exit_(char **path, char *av)
 {
 	int *_status = get_status();
@@ -36,7 +35,6 @@ void exit_(char **path, char *av)
  * Return: If the string does not contain any digits,
  * return 1; otherwise, return -1.
  */
-
 int is_string(char *str)
 {
 	int i;
@@ -58,7 +56,6 @@ int is_string(char *str)
  * Return: 1 if c is a digit.
  *         0 otherwise.
  */
-
 int _isdigit(int c)
 {
 	if (c >= 48 && c <= 57)
@@ -90,7 +87,6 @@ void illegal_number_err(char *exit_arg, char *av)
  *
  * Return: The converted number.
  */
-
 int _atoi(char *s)
 {
 	int i = 0;

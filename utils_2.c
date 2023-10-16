@@ -8,7 +8,6 @@
  * Return: If the lengths of the two strings are the same, return 0;
  * otherwise, return the difference between them.
  */
-
 int _strncmp(const char *first_str, const char *second_str, size_t n)
 {
 	size_t i = 0;
@@ -44,7 +43,6 @@ int _strncmp(const char *first_str, const char *second_str, size_t n)
  * or NULL if insufficient memory
  * was available or str = NULL.
  */
-
 char *_strdup(char *str)
 {
 	char *s;
@@ -85,7 +83,6 @@ char *_strdup(char *str)
  * @filename: The file to search for.
  * Return: NULL if not found.
  */
-
 char *search_dir(char *filename)
 {
 	struct stat st;
@@ -142,7 +139,6 @@ char *search_dir(char *filename)
  *
  * Return: The number of tokens in the string.
  */
-
 int count_tokens(char *string, char *delim)
 {
 	int count = 0;
@@ -189,7 +185,6 @@ int count_tokens(char *string, char *delim)
  * or NULL if memory allocation fails
  *          or if the input string is empty.
  */
-
 char **split_string(char *string, char *delim)
 {
 	char **array;

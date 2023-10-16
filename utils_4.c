@@ -16,7 +16,6 @@
  * Return: 1 if the string contains alphabetic
  * characters, -1 if it does not.
  */
-
 int isempty(char *str)
 {
 	while (*str != '\0')
@@ -35,7 +34,6 @@ int isempty(char *str)
  * Return: 1 if c is a letter, lowercase or uppercase.
  *         0 otherwise.
  */
-
 int _isalpha(int c)
 {
 	if (c >= 97 && c <= 122)
@@ -55,7 +53,6 @@ int _isalpha(int c)
  * across different parts of the code.
  * Return: A pointer to the program's status integer.
  */
-
 int *get_status(void)
 {
 	static int _status = EXIT_SUCCESS;
@@ -72,7 +69,6 @@ int *get_status(void)
  * It uses the `environ` variable
  * to access the environment variables.
  */
-
 void _env(void)
 {
 	int i = 0;
@@ -97,7 +93,6 @@ void _env(void)
  * @av: The program's name.
  * @cmd: The command or file not found.
  */
-
 void not_found_err(char *av, char *cmd)
 {
 	write(STDERR_FILENO, av, _strlen(av));

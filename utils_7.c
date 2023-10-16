@@ -38,7 +38,6 @@ size_t _strcspn(const char *str, const char *reject)
  *
  * Return: 0 on success, or -1 if the function failed.
  */
-
 int allocate_environ(void)
 {
 	int envCount, i = 0;
@@ -74,7 +73,6 @@ int allocate_environ(void)
  * Return: The full path of the command, if it's found in the PATH
  * or exit if it's not present.
  */
-
 char *check_file_in_path(char *buf, char **path, char *cmd, char *av)
 {
 	cmd = search_dir(path[0]); /* handle PATH */
@@ -101,7 +99,6 @@ char *check_file_in_path(char *buf, char **path, char *cmd, char *av)
  * Description: Create a new child process to execute a command.
  * and let the parent process wait until the child process ends execution.
  */
-
 void execute_command(char *buf, char **path, char *cmd)
 {
 	int *_status = get_status(), status;

@@ -6,7 +6,6 @@
  * @av: An array of pointers to the arguments.
  * Return: 0 on success.
  */
-
 int main(int ac, char **av)
 {
 	int *_status = get_status();
