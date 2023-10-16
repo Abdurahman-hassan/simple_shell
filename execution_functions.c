@@ -63,6 +63,19 @@ void interactive_mode(char *av)
 			continue;
 		}
 
+		if (_strcmp(path[0], "cd") == 0)
+		{
+			if (change_directory(path[1], av) == -1)
+			{
+				free(buf);
+				free_path(path);
+				free_path(environ);
+				exit(*_status);
+			}
+			free_path(path);
+			continue;
+		}
+
 		if (_strcmp(path[0], "exit") == 0)
 		{
 			free(buf);
@@ -146,6 +159,19 @@ void non_interactive_mode(char *av)
 					free_path(path);
 					exit(*_status);
 				}
+			}
+			free_path(path);
+			continue;
+		}
+
+		if (_strcmp(path[0], "cd") == 0)
+		{
+			if (change_directory(path[1], av) == -1)
+			{
+				free(buf);
+				free_path(path);
+				free_path(environ);
+				exit(*_status);
 			}
 			free_path(path);
 			continue;
