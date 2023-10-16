@@ -5,6 +5,7 @@
 #define ATEXIT_MAX 32
 #define INITIAL_BUFFER_SIZE 128
 #define MAX_CMD_LENGTH 1024
+#define PATH_MAX 1024
 
 #include <stdbool.h>
 #include <stdio.h>
@@ -84,5 +85,10 @@ void execute_command(char *buf, char **path, char *cmd);
 void replace_variables(char **args, int *status);
 
 /* ============= UTILS_8 ================= */
+
 char *_itoa(int value);
+int change_directory(char *path, char *av);
+void cd_err(char *cwd, char *path, char *av);
+int handle_old_dir(char *cwd);
+
 #endif /* SIMPLE_SHELL_MAIN_H */
