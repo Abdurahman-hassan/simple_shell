@@ -151,3 +151,26 @@ int handle_old_dir(char *cwd)
 		return (0);
 	}
 }
+/**
+ * remove_comment - Removes the content of
+ * a string after the '#' character.
+ * @str: The input string to be processed.
+ * This function checks for the '#'
+ * character in the string. If found and it's
+ * either the start or preceded by a space
+ * it truncates the string at that
+ * position, removing the comment.
+ * If '#' appears without a preceding space
+ * the string remains unchanged.
+ */
+void remove_comment(char *str)
+{
+	char *comment_start = _strchr(str, '#');
+
+	/* If the character before '#' is not a space, then it's not a comment.*/
+	if (comment_start && (comment_start == str || *(comment_start - 1) != ' '))
+		return;
+
+	if (comment_start)
+		*comment_start = '\0';
+}

@@ -90,5 +90,7 @@ char *_itoa(int value);
 int change_directory(char *path, char *av);
 void cd_err(char *cwd, char *path, char *av);
 int handle_old_dir(char *cwd);
+void remove_comment(char *str);
 
-#endif /* SIMPLE_SHELL_MAIN_H */
+#endif /* SIMPLE_SHELL_MAIN_H*/
+

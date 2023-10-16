@@ -20,6 +20,8 @@ void interactive_mode(char *av)
 
 		buf[_strcspn(buf, "\n")] = '\0'; /* Remove newline character */
 
+		remove_comment(buf);
+
 		if (isempty(buf) == -1) /* checks if the string holds spaces only */
 			continue;
 
@@ -108,6 +110,11 @@ void non_interactive_mode(char *av)
 	while ((get = _getline(&buf, &n, STDIN_FILENO)) != -1)
 	{
 		buf[_strcspn(buf, "\n")] = '\0'; /* Remove newline character */
+		if (buf[0] == '#')
+		{
+			continue;
+		}
+		remove_comment(buf);
 
 		if (isempty(buf) == -1) /* checks if the string holds spaces only */
 			continue;
