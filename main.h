@@ -92,5 +92,9 @@ void cd_err(char *cwd, char *path, char *av);
 int handle_old_dir(char *cwd);
 void remove_comment(char *str);
 
+/* ============= UTILS_9 ================= */
+
+char **check_separator(char *buf);
+
 #endif /* SIMPLE_SHELL_MAIN_H*/
 
