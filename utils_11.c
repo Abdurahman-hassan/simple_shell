@@ -84,6 +84,20 @@ size_t _strspn(char *s, char *accept)
 	return (i);
 }
 
+
+void custom_log(const char *format, ...)
+{
+    va_list args;
+    char *buffer;
+
+    va_start(args, format);
+    vasprintf(&buffer, format, args);
+    va_end(args);
+
+    fprintf(stderr, "%s", buffer);
+    free(buffer);
+}
+
 void handle_file(char **av, alias_t **head)
 {
 	int *_status = get_status(), fd;
@@ -95,9 +109,7 @@ void handle_file(char **av, alias_t **head)
 
 	fd = open(av[1], O_RDONLY);
 	if (fd == -1) {
-		write(STDERR_FILENO, av[0], _strlen(av[0]));
-		write(STDERR_FILENO, ": 0: Can't open ", 17);
-		write(STDERR_FILENO, av[1], _strlen(av[1]));
+		custom_log("%s: 0: Can't open %s\n", av[0], av[1]);
 		free_path(environ);
 		exit(127);
 	}

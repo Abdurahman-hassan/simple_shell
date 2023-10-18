@@ -6,6 +6,7 @@
 #define INITIAL_BUFFER_SIZE 128
 #define MAX_CMD_LENGTH 1024
 #define PATH_MAX 1024
+#define _GNU_SOURCE
 
 #include <stdbool.h>
 #include <stdio.h>
@@ -19,6 +20,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <stdarg.h>
 
 extern char **environ;
 
@@ -134,5 +136,6 @@ char *_strpbrk(char *s, char *accept);
 size_t _strspn(char *s, char *accept);
 
 void handle_file(char **av, alias_t **head);
+void custom_log(const char *format, ...);
 
 #endif /* SIMPLE_SHELL_MAIN_H*/
