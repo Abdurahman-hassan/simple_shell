@@ -139,31 +139,29 @@ char *search_dir(char *filename)
  *
  * Return: The number of tokens in the string.
  */
-int count_tokens(char *string, char *delim)
+int count_tokens(char *string, const char *delim)
 {
 	int count = 0;
-	char *token, *copy;
+	char *next_ptr, *token, *string_copy;
 
-	if (string == NULL || delim == NULL)
+	if (!string || !delim)
 		return (0);
 
 	/* Make a copy of the string to avoid modifying the original */
-	copy = _strdup(string);
-
-	if (copy == NULL)
+	string_copy = strdup(string);
+	if (!string_copy)
 		return (0);
 
 	/* Tokenize the copy and count tokens */
-	token = strtok(copy, delim);
-	while (token != NULL)
+	token = _Strtok_r(string_copy, delim, &next_ptr);
+	while (token)
 	{
 		count++;
-		token = strtok(NULL, delim);
+		token = _Strtok_r(NULL, delim, &next_ptr);
 	}
 
 	/* Free the copy of the string */
-	free(copy);
-
+	free(string_copy);
 	return (count);
 }
 
@@ -185,46 +183,47 @@ int count_tokens(char *string, char *delim)
  * or NULL if memory allocation fails
  *          or if the input string is empty.
  */
-char **split_string(char *string, char *delim)
+char **split_string(char *string, const char *delim)
 {
-	char **array;
-	char *token, *copy;
-	int i = 0, j, count;
+	int tokens_count, i, j;
+	char **tokens, *token, *next_ptr, *string_copy;
 
-	count = count_tokens(string, delim);
-	if (count == 0)
+	tokens_count = count_tokens(string, delim);
+	if (tokens_count == 0)
 		return (NULL);
-
-	array = malloc((count + 1) * sizeof(char *));
-	if (array == NULL)
+	tokens = (char **)malloc(sizeof(char *) * (tokens_count + 1));
+	if (!tokens)
 		return (NULL);
 	/* Make a copy of the string to avoid modifying the original */
-	copy = _strdup(string);
-	if (copy == NULL)
+	string_copy = strdup(string);
+	if (!string_copy)
 	{
-		free(array);
+		free(tokens);
 		return (NULL);
 	}
+	i = 0;
 	/* Tokenize the copy and store tokens in the array */
-	token = strtok(copy, delim);
-	while (token != NULL)
+	token = _Strtok_r(string_copy, delim, &next_ptr);
+	while (token)
 	{
-		array[i] = _strdup(token);
-		if (array[i] == NULL)
+		tokens[i] = strdup(token);
+		if (!tokens[i])
 		{
-			/* Free allocated memory if an error occurs */
 			for (j = 0; j < i; j++)
-				free(array[j]);
-			free(array);
-			free(copy);
+			{
+				free(tokens[j]);
+			}
+			free(tokens);
+			free(string_copy);
 			return (NULL);
 		}
+		token = _Strtok_r(NULL, delim, &next_ptr);
 		i++;
-		token = strtok(NULL, delim);
 	}
 	/* Terminate the array with a NULL pointer */
-	array[i] = NULL;
+	tokens[i] = NULL;
 	/* Free the copy of the string */
-	free(copy);
-	return (array);
+	free(string_copy);
+	return (tokens);
 }
+

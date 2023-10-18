@@ -41,8 +41,8 @@ int _strcmp(char *s1, char *s2);
 int _strncmp(const char *first_str, const char *second_str, size_t n);
 char *_strdup(char *str);
 char *search_dir(char *filename);
-int count_tokens(char *string, char *delim);
-char **split_string(char *string, char *delim);
+int count_tokens(char *string, const char *delim);
+char **split_string(char *string, const char *delim);
 
 /* =============  UTILS_3 =============== */
 
@@ -95,6 +95,8 @@ void remove_comment(char *str);
 /* ============= UTILS_9 ================= */
 
 char **check_separator(char *buf);
+char *_Strtok_r(char *str, const char *delim, char **saveptr);
+void free_tokens(char **tokens);
 
 #endif /* SIMPLE_SHELL_MAIN_H*/
 
