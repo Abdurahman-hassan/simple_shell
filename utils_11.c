@@ -84,15 +84,6 @@ size_t _strspn(char *s, char *accept)
 	return (i);
 }
 
-/* ###################################################################### */
-/* ##                                                                  ## */
-/* ##                                                                  ## */
-/* ##                          HANDLE FILE                             ## */
-/* ##                                                                  ## */
-/* ##                                                                  ## */
-/* ###################################################################### */
-
-
 void handle_file(char **av, alias_t **head)
 {
 	int *_status = get_status(), fd;
@@ -105,13 +96,11 @@ void handle_file(char **av, alias_t **head)
 	fd = open(av[1], O_RDONLY);
 	if (fd == -1) {
 		write(STDERR_FILENO, av[0], _strlen(av[0]));
-		write(STDERR_FILENO, ": 0: cannot open ", 17);
+		write(STDERR_FILENO, ": 0: Can't open ", 17);
 		write(STDERR_FILENO, av[1], _strlen(av[1]));
-		write(STDERR_FILENO, ": No such file\n", 15);
 		free_path(environ);
-		exit(2);
+		exit(127);
 	}
-
 	if (fstat(fd, &st) == -1) {
 		perror("Error getting file size");
 		close(fd);
@@ -183,29 +172,18 @@ void handle_file(char **av, alias_t **head)
 	/* Print lines and free memory */
 	for (i = 0; i < line_count; i++)
 	{
-		/*printf("%s\n", lines[i]);*/
-		/*######################  START EXECUTE ######################*/
-
 		lines[i][_strcspn(lines[i], "\n")] = '\0';
-
 		remove_comment(lines[i]);
-
 		if (isempty(lines[i]) == -1) /* checks if the string holds spaces only */
 			continue;
-
-		/* ========================================== */
 		commands = check_separator(lines[i]);
-
 		if (commands != NULL)
 		{
 			for (i = 0; commands[i]; i++)
 			{
-
 				path = split_string(commands[i], " ");
-
 				if (path == NULL)
 					exit(EXIT_FAILURE);
-
 				/* Replace variables in the command */
 				replace_variables(path, _status);
 
@@ -231,7 +209,7 @@ void handle_file(char **av, alias_t **head)
 			}
 			free_path(commands);
 
-		} /* ============================================================ */
+		}
 		else
 		{
 			path = split_string(lines[i], " ");
@@ -267,9 +245,6 @@ void handle_file(char **av, alias_t **head)
 	}
 	/* This code is unreachable in the current structure, but is good practice */
 	free_list(*head);
-
-		/*######################  END EXECUTE ######################*/
-
 	free(lines);
 	free(buffer);
 	close(fd);
