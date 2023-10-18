@@ -5,6 +5,7 @@
  * Function to properly free the path array
  * @path: an array holds the commands enterd by user
  */
+
 void free_path(char **path)
 {
 	char **current = path;
@@ -36,6 +37,7 @@ static int atexit_count;
  * the maximum number of registered functions has been reached.
  * Return: 0 on success, -1 if the maximum limit is reached.
  */
+
 int my_atexit(void (*function)(void))
 {
 	if (atexit_count >= ATEXIT_MAX)
@@ -58,6 +60,7 @@ int my_atexit(void (*function)(void))
  * system call to terminate the
  * program execution with the specified exit status.
  */
+
 void _exit(int status)
 {
 	/* Flush all open streams */
@@ -93,6 +96,7 @@ void _exit(int status)
  *
  * Return: The number of characters read, or -1 on error.
  */
+
 ssize_t _read_chars(char **lineptr, size_t *n, int fd)
 {
 	size_t pos = 0;
@@ -152,6 +156,7 @@ ssize_t _read_chars(char **lineptr, size_t *n, int fd)
  * Return: The number of characters read
  * (excluding the null terminator), or -1 on error.
  */
+
 ssize_t _getline(char **lineptr, size_t *n, int fd)
 {
 	ssize_t totalChars = 0, charsRead;

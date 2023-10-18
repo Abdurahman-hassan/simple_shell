@@ -148,7 +148,7 @@ int count_tokens(char *string, const char *delim)
 		return (0);
 
 	/* Make a copy of the string to avoid modifying the original */
-	string_copy = strdup(string);
+	string_copy = _strdup(string);
 	if (!string_copy)
 		return (0);
 

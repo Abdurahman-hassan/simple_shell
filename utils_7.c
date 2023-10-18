@@ -191,14 +191,14 @@ void replace_variables(char **args, int *_status)
 			}
 			else
 			{
-				var_value = getenv(var_name);
+				var_value = _getenv(var_name);
 				free(args[i]);
 				if (var_value != NULL)
 				/*The variable is defined so use its value*/
-					args[i] = strdup(var_value);
+					args[i] = _strdup(var_value);
 				else
 				/* The variable isn't defined use an empty string */
-					args[i] = strdup("");
+					args[i] = _strdup("");
 			}
 		}
 	}

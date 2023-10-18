@@ -25,7 +25,6 @@ char **check_separator(char *buf)
 	return (NULL);
 }
 
-
 /**
  * _Strtok_r - Splits a string into
  * tokens; reentrant version of strtok.
@@ -52,7 +51,7 @@ char *_Strtok_r(char *str, const char *delim, char **saveptr)
 		str = *saveptr;
 
 	/* Skip leading delimiters */
-	str += strspn(str, delim);
+	str += _strspn(str, (char *)delim);
 	if (*str == '\0')
 	{
 		*saveptr = str;
@@ -61,10 +60,10 @@ char *_Strtok_r(char *str, const char *delim, char **saveptr)
 
 	/* Initialize token start and find the end of the token */
 	token_start = str;
-	str = strpbrk(token_start, delim);
+	str = _strpbrk(token_start, (char *)delim);
 	if (str == NULL)
 	{
-		*saveptr = strchr(token_start, '\0');
+		*saveptr = _strchr(token_start, '\0');
 	}
 	else
 	{
@@ -97,4 +96,109 @@ void free_tokens(char **tokens)
 		tmp++;
 	}
 	free(tokens);
+}
+
+/**
+ * check_builtin - Determine whether the passed command is built-in or not.
+ *
+ * @cmd: The passed command.
+ *
+ * Return: if the command is built-in return 0,
+ * otherwise return -1.
+ */
+int check_builtin(char *cmd)
+{
+	int i;
+	char *builtin_commands[] = {"env", "exit", "setenv", "unsetenv",
+	"cd", "alias"};
+
+	for (i = 0; i < 6; i++)
+	{
+		if (_strcmp(builtin_commands[i], cmd) == 0)
+			return (0);
+	}
+
+	return (-1);
+}
+
+/**
+ * execute_builtin - Execute a built-in command.
+ *
+ * @buf: a buffer holds the line that passed to the stdin.
+ * @path: an array holds the commands enterd by user.
+ * @av: The program's name.
+ * @head: pointer to the head of the alias_t list.
+ *
+ * Return: if the command executed successfully return 1,
+ * otherwise return -1.
+ */
+int execute_builtin(char *buf, char **path, char *av, alias_t **head)
+{
+	int *_status = get_status();
+
+	/* Replace variables in the command */
+	replace_variables(path, _status);
+
+	if (_strcmp(path[0], "alias") == 0)
+	{
+		handle_alias(path, head);
+		free_path(path);
+		return (1);
+	}
+
+	if (_strcmp(path[0], "env") == 0)
+	{
+		_env();
+		free_path(path);
+		return (1);
+	}
+
+	if (_strcmp(path[0], "setenv") == 0)
+	{
+		if (path[1] != NULL && path[2] != NULL)
+		{
+			if (_setenv(path[1], path[2], 1) == -1)
+			{
+				perror("Error");
+				free_path(path);
+				exit(*_status);
+			}
+		}
+		free_path(path);
+		return (1);
+	}
+
+	if (_strcmp(path[0], "unsetenv") == 0)
+	{
+		if (_unsetenv(path[1]) == -1)
+		{
+			perror("Error");
+			free(buf);
+			free_path(path);
+			exit(*_status);
+		}
+		free_path(path);
+		return (1);
+	}
+
+	if (_strcmp(path[0], "cd") == 0)
+	{
+		if (change_directory(path[1], av) == -1)
+		{
+			free(buf);
+			free_path(path);
+			free_path(environ);
+			exit(*_status);
+		}
+		free_path(path);
+		return (1);
+	}
+
+	if (_strcmp(path[0], "exit") == 0)
+	{
+		free(buf);
+		exit_(path, av);
+	}
+
+	return (-1);
 }

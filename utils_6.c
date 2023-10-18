@@ -2,10 +2,12 @@
 
 /**
  * _setenv - Initialize a new environment variable, or modify an existing one.
+ *
  * @name: The name of the environment variable.
  * @value: The value of the environment variable.
  * @overwrite: A trigger number determines whether or not
  * the variable value should be overwritten.
+ *
  * Description: The function accepts the name and value of the environment
  * variable and determines whether or not the name already exists as an
  * environment variable. A new variable with the provided name and value
@@ -13,28 +15,31 @@
  * we look at the overwrite value. If it is not zero, the old value of the
  * name is overwritten with a new one; if the overwritten value is zero,
  * nothing is changed.
+ *
  * Return: 0 on success, or -1 if the function failed.
  */
+
 int _setenv(const char *name, const char *value, int overwrite)
 {
-	size_t name_len = _strlen((char *)name), i, envCount = 0;
+	size_t name_len = _strlen((char *)name), envCount = 0;
 	int var_index;
 	char *val = NULL, *newVar = NULL, **newEnviron = NULL;
 
 	if (!name || name_len == 0 || !value)
 		return (-1);
 
-	for (i = 0; i < name_len; i++)
-	{
-		if (name[i] == '=')
-			return (-1);
-	}
+	if (_strchr((char *)name, '=') != NULL)
+		return (-1);
+
 	for (envCount = 0; environ[envCount]; envCount++)
 		;
+
 	newVar = concat((char *)name, "=", (char *)value);
 	if (newVar == NULL)
 		return (-1);
+
 	val = _getenv(name);
+
 	/*Case of existing enviroment variable*/
 	/*if overwrite != 0, overwrite the value*/
 	if (val != NULL && overwrite != 0)
@@ -42,7 +47,6 @@ int _setenv(const char *name, const char *value, int overwrite)
 		var_index = get_var_index((char *)name, val);
 		free(environ[var_index]);
 		environ[var_index] = newVar;
-		return (0);
 	}
 	else
 	{
@@ -61,16 +65,22 @@ int _setenv(const char *name, const char *value, int overwrite)
 
 /**
  * _unsetenv - Removes a variable from the environment array.
+ *
  * @name: The name of the variable.
- * Description: The function looks for the
- * variable "name" in the environ array.
- * It will remove it and reindex the environment array if it detects it.
- * If the name cannot be discovered, simply return zero.
+ *
+ * Description: The function looks for the variable "name" in the environ
+ * array.It will remove it and reindex the environment array if it detects
+ * it. If the name cannot be discovered, simply return zero.
+ *
  * Return: Always 0.
  */
+
 int _unsetenv(const char *name)
 {
 	int index = -1, i, j;
+
+	if (!name)
+		return (0);
 
 	for (i = 0; environ[i]; i++)
 	{
@@ -82,6 +92,7 @@ int _unsetenv(const char *name)
 			break;
 		}
 	}
+
 	if (index == -1)
 		return (0);
 
@@ -94,14 +105,18 @@ int _unsetenv(const char *name)
 /**
  * concat - Concatenate two strings with a delimiter
  * between them to one string
+ *
  * @first_str: The first string.
  * @delim: The delimiter.
  * @second_str: The second string.
+ *
  * Description: The function takes the two strings,
  * creates a new memory area, and copies the two
  * strings and the delimiter into it.
+ *
  * Return: If the function fails, the new string is returned, else it is NULL.
  */
+
 char *concat(char *first_str, char *delim, char *second_str)
 {
 	size_t first_len = _strlen(first_str);
@@ -120,10 +135,13 @@ char *concat(char *first_str, char *delim, char *second_str)
 
 /**
  * get_var_index - Find the index of an environment variable.
+ *
  * @name: Name of the variable.
  * @val: Value of the variable.
+ *
  * Return: If the variable is found, return its index; else, return -1.
  */
+
 int get_var_index(char *name, char *val)
 {
 	int i;
@@ -144,10 +162,13 @@ int get_var_index(char *name, char *val)
 
 /**
  * _getenv - Obtains the value of a variable in the environment array.
+ *
  * @name: The name of the variable.
+ *
  * Return: If the variable is found, its value is returned;
  * otherwise, NULL is returned.
  */
+
 char *_getenv(const char *name)
 {
 	int i = 0;
