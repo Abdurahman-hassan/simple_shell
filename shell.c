@@ -12,8 +12,14 @@ int main(int ac, char **av)
 	int *_status = get_status();
 	alias_t *head = NULL;
 
-	(void)ac;
 	allocate_environ();
+
+	if (ac == 2)
+	{
+		handle_file(av, &head);
+		free_path(environ);
+		return (*_status);
+	}
 
 	if (isatty(STDIN_FILENO))
 	{

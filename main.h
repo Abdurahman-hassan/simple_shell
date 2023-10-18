@@ -18,6 +18,7 @@
 #include <dirent.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <fcntl.h>
 
 extern char **environ;
 
@@ -132,5 +133,6 @@ void replace_alias(alias_t **head, char **path);
 char *_strpbrk(char *s, char *accept);
 size_t _strspn(char *s, char *accept);
 
-#endif /* SIMPLE_SHELL_MAIN_H*/
+void handle_file(char **av, alias_t **head);
 
+#endif /* SIMPLE_SHELL_MAIN_H*/
