@@ -21,12 +21,29 @@
 
 extern char **environ;
 
+/**
+ * struct alias_s - singly linked list.
+ *
+ * @name: The name of the alias.
+ * @value: The value of the alias.
+ * @next: points to the next node.
+ *
+ * Description: singly linked list that holds the
+ * aliases of the current shell session.
+ */
+typedef struct alias_s
+{
+	char *name;
+	char *value;
+	struct alias_s *next;
+} alias_t;
+
 /* ============ INTERACTIVE FUNCTION ============== */
-void interactive_mode(char *av);
+void interactive_mode(char *av, alias_t **head);
 
 /* ============ NON_INTERACTIVE FUNCTION ============== */
 
-void non_interactive_mode(char *av);
+void non_interactive_mode(char *av, alias_t **head);
 
 /* ===========  UTILS ============ */
 
@@ -97,6 +114,23 @@ void remove_comment(char *str);
 char **check_separator(char *buf);
 char *_Strtok_r(char *str, const char *delim, char **saveptr);
 void free_tokens(char **tokens);
+int check_builtin(char *cmd);
+int execute_builtin(char *buf, char **path, char *av, alias_t **head);
+
+
+/* ============= UTILS_10 ================= */
+
+alias_t *add_node_end(alias_t **head, const char *name, const char *value);
+void free_list(alias_t *head);
+size_t print_list(const alias_t *h);
+int handle_alias(char **path, alias_t **head);
+alias_t *get_node(alias_t *head, char *name);
+
+/* ============= UTILS_11 ================= */
+
+void replace_alias(alias_t **head, char **path);
+char *_strpbrk(char *s, char *accept);
+size_t _strspn(char *s, char *accept);
 
 #endif /* SIMPLE_SHELL_MAIN_H*/
 
