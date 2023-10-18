@@ -1,6 +1,6 @@
 #include "main.h"
 
-void interactive_mode(char *av)
+void interactive_mode(char *av, alias_t **head)
 {
 	char *buf = NULL, *cmd = NULL, **path = NULL, **commands;
 	int get, i;
@@ -32,8 +32,6 @@ void interactive_mode(char *av)
 		{
 			for (i = 0; commands[i]; i++)
 			{
-				if (_strcmp(commands[i], "env") == 0)
-					_env();
 
 				path = split_string(commands[i], " ");
 
@@ -43,55 +41,47 @@ void interactive_mode(char *av)
 				/* Replace variables in the command */
 				replace_variables(path, _status);
 
-				if (_strcmp(path[0], "setenv") == 0)
+				if (check_builtin(path[0]) == 0)
 				{
-					if (path[1] != NULL && path[2] != NULL)
-					{
-						if (_setenv(path[1], path[2], 1) == -1)
-						{
-							perror("Error");
-							free(buf);
-							free_path(path);
-							exit(*_status);
-						}
-					}
-					free_path(path);
-					continue;
+					execute_builtin(buf, path, av, head);
 				}
-
-				if (_strcmp(path[0], "unsetenv") == 0)
+				else
 				{
-					if (_unsetenv(path[1]) == -1)
+					replace_alias(head, path);
+					cmd = check_file_in_path(commands[i], path, cmd, av);
+
+					if (access(cmd, F_OK | X_OK) == -1)
 					{
-						perror("Error");
+						perror(cmd); /* Give specific error message */
+						free(cmd);
 						free(buf);
 						free_path(path);
-						exit(*_status);
+						continue; /* Go to the next iteration */
 					}
-					free_path(path);
-					continue;
+					execute_command(commands[i], path, cmd);
 				}
+			}
+			free_path(commands);
 
-				if (_strcmp(path[0], "cd") == 0)
-				{
-					if (change_directory(path[1], av) == -1)
-					{
-						free(buf);
-						free_path(path);
-						free_path(environ);
-						exit(*_status);
-					}
-					free_path(path);
-					continue;
-				}
+		} /* ============================================================ */
+		else
+		{
+			path = split_string(buf, " ");
 
-				if (_strcmp(path[0], "exit") == 0)
-				{
-					free(buf);
-					exit_(path, av);
-				}
+			if (path == NULL)
+				exit(EXIT_FAILURE);
 
-				cmd = check_file_in_path(commands[i], path, cmd, av);
+			/* Replace variables in the command */
+			replace_variables(path, _status);
+
+			if (check_builtin(path[0]) == 0)
+			{
+				execute_builtin(buf, path, av, head);
+			}
+			else
+			{
+				replace_alias(head, path);
+				cmd = check_file_in_path(buf, path, cmd, av);
 
 				if (access(cmd, F_OK | X_OK) == -1)
 				{
@@ -101,90 +91,17 @@ void interactive_mode(char *av)
 					free_path(path);
 					continue; /* Go to the next iteration */
 				}
-				execute_command(commands[i], path, cmd);
-			}
-			free_path(commands);
-		} /* ============================================================ */
-		else
-		{
-
-			if (_strcmp(buf, "env") == 0)
-				_env();
-
-			path = split_string(buf, " ");
-
-			if (path == NULL)
-				exit(EXIT_FAILURE);
-
-			/* Replace variables in the command */
-			replace_variables(path, _status);
-
-			if (_strcmp(path[0], "setenv") == 0)
-			{
-				if (path[1] != NULL && path[2] != NULL)
-				{
-					if (_setenv(path[1], path[2], 1) == -1)
-					{
-						perror("Error");
-						free(buf);
-						free_path(path);
-						exit(*_status);
-					}
-				}
-				free_path(path);
-				continue;
+				execute_command(buf, path, cmd);
 			}
 
-			if (_strcmp(path[0], "unsetenv") == 0)
-			{
-				if (_unsetenv(path[1]) == -1)
-				{
-					perror("Error");
-					free(buf);
-					free_path(path);
-					exit(*_status);
-				}
-				free_path(path);
-				continue;
-			}
-
-			if (_strcmp(path[0], "cd") == 0)
-			{
-				if (change_directory(path[1], av) == -1)
-				{
-					free(buf);
-					free_path(path);
-					free_path(environ);
-					exit(*_status);
-				}
-				free_path(path);
-				continue;
-			}
-
-			if (_strcmp(path[0], "exit") == 0)
-			{
-				free(buf);
-				exit_(path, av);
-			}
-
-			cmd = check_file_in_path(buf, path, cmd, av);
-
-			if (access(cmd, F_OK | X_OK) == -1)
-			{
-				perror(cmd); /* Give specific error message */
-				free(cmd);
-				free(buf);
-				free_path(path);
-				continue; /* Go to the next iteration */
-			}
-			execute_command(buf, path, cmd);
 		}
 	}
 	/* This code is unreachable in the current structure, but is good practice */
 	free(buf);
+	free_list(*head);
 }
 
-void non_interactive_mode(char *av)
+void non_interactive_mode(char *av, alias_t **head)
 {
 	char *buf = NULL, *cmd = NULL, **path, **commands;
 	int get, i;
@@ -206,76 +123,63 @@ void non_interactive_mode(char *av)
 		commands = check_separator(buf);
 
 		/* ################################################################## */
+
 		if (commands != NULL)
 		{
 			for (i = 0; commands[i]; i++)
 			{
-				if (_strcmp(commands[i], "env") == 0)
-				{
-					_env();
-					continue; /* Skip the rest of the loop for 'env' */
-				}
 
 				path = split_string(commands[i], " ");
 
 				if (path == NULL)
-					exit(*_status);
+					exit(EXIT_FAILURE);
 
 				/* Replace variables in the command */
 				replace_variables(path, _status);
 
-				if (_strcmp(path[0], "exit") == 0)
+				if (check_builtin(path[0]) == 0)
 				{
-					free_path(commands);
-					exit_(path, av);
+					if (execute_builtin(buf, path, av, head) == 1)
+						continue;
 				}
-
-				if (_strcmp(path[0], "setenv") == 0)
+				else
 				{
-					if (path[1] != NULL && path[2] != NULL)
-					{
-						if (_setenv(path[1], path[2], 1) == -1)
-						{
-							perror("Error");
-							free(buf);
-							free_path(path);
-							exit(*_status);
-						}
-					}
-					free_path(path);
-					continue;
-				}
+					replace_alias(head, path);
+					cmd = check_file_in_path(commands[i], path, cmd, av);
 
-				if (_strcmp(path[0], "unsetenv") == 0)
-				{
-					if (path[1] != NULL)
+					if (access(cmd, F_OK | X_OK) == -1)
 					{
-						if (_unsetenv(path[1]) == -1)
-						{
-							perror("Error");
-							free(buf);
-							free_path(path);
-							exit(*_status);
-						}
-					}
-					free_path(path);
-					continue;
-				}
-
-				if (_strcmp(path[0], "cd") == 0)
-				{
-					if (change_directory(path[1], av) == -1)
-					{
+						perror(cmd); /* Give specific error message */
+						free(cmd);
 						free(buf);
 						free_path(path);
-						free_path(environ);
-						exit(*_status);
+						continue; /* Go to the next iteration */
 					}
-					free_path(path);
-					continue;
+					execute_command(commands[i], path, cmd);
 				}
+			}
+			free_path(commands);
 
-				cmd = check_file_in_path(commands[i], path, cmd, av);
+		} /* ============================================================ */
+		else
+		{
+			path = split_string(buf, " ");
+
+			if (path == NULL)
+				exit(EXIT_FAILURE);
+
+			/* Replace variables in the command */
+			replace_variables(path, _status);
+
+			if (check_builtin(path[0]) == 0)
+			{
+				if (execute_builtin(buf, path, av, head) == 1)
+					continue;
+			}
+			else
+			{
+				replace_alias(head, path);
+				cmd = check_file_in_path(buf, path, cmd, av);
 
 				if (access(cmd, F_OK | X_OK) == -1)
 				{
@@ -285,91 +189,12 @@ void non_interactive_mode(char *av)
 					free_path(path);
 					continue; /* Go to the next iteration */
 				}
-				execute_command(commands[i], path, cmd);
+				execute_command(buf, path, cmd);
 			}
-			free_path(commands);
+
 		}
-		else
-		{
-			if (_strcmp(buf, "env") == 0)
-			{
-				_env();
-				continue; /* Skip the rest of the loop for 'env' */
-			}
-
-			path = split_string(buf, " ");
-
-			if (path == NULL)
-				exit(*_status);
-
-			/* Replace variables in the command */
-			replace_variables(path, _status);
-
-			if (_strcmp(path[0], "exit") == 0)
-			{
-				free(buf);
-				exit_(path, av);
-			}
-
-			if (_strcmp(path[0], "setenv") == 0)
-			{
-				if (path[1] != NULL && path[2] != NULL)
-				{
-					if (_setenv(path[1], path[2], 1) == -1)
-					{
-						perror("Error");
-						free(buf);
-						free_path(path);
-						exit(*_status);
-					}
-				}
-				free_path(path);
-				continue;
-			}
-
-			if (_strcmp(path[0], "unsetenv") == 0)
-			{
-				if (path[1] != NULL)
-				{
-					if (_unsetenv(path[1]) == -1)
-					{
-						perror("Error");
-						free(buf);
-						free_path(path);
-						exit(*_status);
-					}
-				}
-				free_path(path);
-				continue;
-			}
-
-			if (_strcmp(path[0], "cd") == 0)
-			{
-				if (change_directory(path[1], av) == -1)
-				{
-					free(buf);
-					free_path(path);
-					free_path(environ);
-					exit(*_status);
-				}
-				free_path(path);
-				continue;
-			}
-
-			cmd = check_file_in_path(buf, path, cmd, av);
-
-			if (access(cmd, F_OK | X_OK) == -1)
-			{
-				perror(cmd); /* Give specific error message */
-				free(cmd);
-				free(buf);
-				free_path(path);
-				continue; /* Go to the next iteration */
-			}
-			execute_command(buf, path, cmd);
-
-		} /* ################################################################## */
-		
+		 /* ################################################################## */
 	}
 	free(buf); /* Free buf at the end (important if getline fails) */
+	free_list(*head);
 }
