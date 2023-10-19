@@ -135,7 +135,6 @@ void replace_alias(alias_t **head, char **path);
 char *_strpbrk(char *s, char *accept);
 size_t _strspn(char *s, char *accept);
 void handle_file(char **av, alias_t **head);
-void custom_log(const char *format, ...);
 
 int check_access(char *cmd, char *buf, char **path);
 int exec(char *buf, char *av, alias_t **head, char *cmd, int *_status);
@@ -145,8 +144,11 @@ void execute_file_cmds(char **lines, size_t lineCount, char **av, alias_t **h);
 int exract_lines(char **lines, char *buf, ssize_t rd, char *lineStart);
 
 
+
 int execute_builtin_2(char *buf, char **path, char *av);
 
 void print_node(alias_t *node);
+
+void custom_log(const char *format, ...);
 
 #endif /* SIMPLE_SHELL_MAIN_H*/

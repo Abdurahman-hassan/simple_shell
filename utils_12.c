@@ -61,10 +61,7 @@ void handle_file(char **av, alias_t **head)
  */
 void file_err(char **av)
 {
-	write(STDERR_FILENO, av[0], _strlen(av[0]));
-	write(STDERR_FILENO, ": 0: cannot open ", 17);
-	write(STDERR_FILENO, av[1], _strlen(av[1]));
-	write(STDERR_FILENO, ": No such file\n", 15);
+	custom_log("%s: 0: Can't open %s\n", av[0], av[1]);
 	free_path(environ);
 	exit(2);
 }
@@ -157,7 +154,6 @@ void execute_file_cmds(char **lines, size_t lineCount, char **av, alias_t **h)
  * @buf: A pointer to a character representing the buffer containing the data.
  * @rd: A ssize_t representing the number of bytes read from the buffer.
  * @lineStart: A pointer to a character representing the start of a line.
- * @fd: An integer representing the file descriptor.
  * Return: An integer representing the number of lines extracted.
  */
 int exract_lines(char **lines, char *buf, ssize_t rd, char *lineStart)

@@ -134,7 +134,8 @@ int check_builtin(char *cmd)
  */
 int execute_builtin(char *buf, char **path, char *av, alias_t **head)
 {
-	int *_status = get_status(), ret;
+	int *_status = get_status();
+	int ret;
 
 	replace_variables(path, _status);
 

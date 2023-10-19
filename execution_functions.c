@@ -16,7 +16,8 @@
 void interactive_mode(char *av, alias_t **head)
 {
 	char *buf = NULL, *cmd = NULL, **commands;
-	int *_status = get_status(), get, i;
+	int *_status = get_status();
+	int get, i;
 	size_t n = 0; /* Allocate buffer size dynamically */
 
 	while (1)
