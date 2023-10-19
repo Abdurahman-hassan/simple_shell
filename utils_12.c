@@ -61,7 +61,7 @@ void handle_file(char **av, alias_t **head)
  */
 void file_err(char **av)
 {
-	custom_log("%s: 0: Can't open %s\n", av[0], av[1]);
+	custom_log("%s: 0: Cannot open %s\n", av[0], av[1]);
 	free_path(environ);
 	exit(2);
 }
