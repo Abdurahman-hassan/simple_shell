@@ -27,3 +27,29 @@ void custom_log(const char *format, ...)
 	fprintf(stderr, "%s", buffer);
 	free(buffer);
 }
+
+/**
+ * _strstr - Locate a substring within a string.
+ * @haystack: The string to search within.
+ * @needle: The substring to find.
+ *
+ * Return: Pointer to the beginning of the located substring,
+ * or NULL if the substring is not found.
+ */
+char *_strstr(char *haystack, const char *needle)
+{
+    char *start_h = haystack;
+    const char *p, *q;
+
+    for (; *start_h != '\0'; start_h++) {
+        p = start_h;
+        q = needle;
+        while (*q != '\0' && *p == *q) {
+            p++;
+            q++;
+        }
+        if (*q == '\0')
+            return start_h;
+    }
+    return (NULL);
+}

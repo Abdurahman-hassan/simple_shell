@@ -143,12 +143,10 @@ void file_interrupt(char **av, int fd, char *buffer);
 void execute_file_cmds(char **lines, size_t lineCount, char **av, alias_t **h);
 int exract_lines(char **lines, char *buf, ssize_t rd, char *lineStart);
 
-
-
 int execute_builtin_2(char *buf, char **path, char *av);
 
 void print_node(alias_t *node);
-
 void custom_log(const char *format, ...);
-
+char *find_operator(char *str);
+char *_strstr(char *haystack, const char *needle);
 #endif /* SIMPLE_SHELL_MAIN_H*/

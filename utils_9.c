@@ -1,30 +1,36 @@
 #include "main.h"
 
 /**
- * check_separator - Checks for a specific
- * separator in a string and splits it.
+ * check_separator - Checks for specific
+ * separators in a string and splits it.
  * @buf: The input string to check and potentially split.
  * This function checks 'buf' for the presence
- * of a semicolon (';'). If found,
+ * of a semicolon (';'), '&&', or '||'. If found,
  * it splits 'buf' into a null-terminated
  * array of strings (commands) divided by
- * this separator. It uses 'split_string' for this operation.
+ * these separators. It uses 'split_string' for this operation.
  * Return: Null-terminated array of
- * commands if ';' is found, or NULL if not.
+ * commands if a separator is found, or NULL if not.
  */
 char **check_separator(char *buf)
 {
-	char **commands = NULL;
+    char **commands = NULL;
+    const char *separators[] = { ";", "&&", "||", NULL };
+    int i;
 
-	if (_strchr(buf, ';'))
-	{
-		commands = split_string(buf, ";");
-		return (commands);
-	}
+    for (i = 0; separators[i]; ++i)
+    {
+        if (_strstr(buf, separators[i]))
+        {
+            commands = split_string(buf, separators[i]);
+            if (commands) {
+                break;
+            }
+        }
+    }
 
-	return (NULL);
+    return (commands);
 }
-
 /**
  * _Strtok_r - Splits a string into
  * tokens; reentrant version of strtok.
