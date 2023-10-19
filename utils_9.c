@@ -134,9 +134,8 @@ int check_builtin(char *cmd)
  */
 int execute_builtin(char *buf, char **path, char *av, alias_t **head)
 {
-	int *_status = get_status();
+	int *_status = get_status(), ret;
 
-	/* Replace variables in the command */
 	replace_variables(path, _status);
 
 	if (_strcmp(path[0], "alias") == 0)
@@ -168,37 +167,7 @@ int execute_builtin(char *buf, char **path, char *av, alias_t **head)
 		return (1);
 	}
 
-	if (_strcmp(path[0], "unsetenv") == 0)
-	{
-		if (_unsetenv(path[1]) == -1)
-		{
-			perror("Error");
-			free(buf);
-			free_path(path);
-			exit(*_status);
-		}
-		free_path(path);
-		return (1);
-	}
+	ret = execute_builtin_2(buf, path, av);
 
-	if (_strcmp(path[0], "cd") == 0)
-	{
-		if (change_directory(path[1], av) == -1)
-		{
-			free(buf);
-			free_path(path);
-			free_path(environ);
-			exit(*_status);
-		}
-		free_path(path);
-		return (1);
-	}
-
-	if (_strcmp(path[0], "exit") == 0)
-	{
-		free(buf);
-		exit_(path, av);
-	}
-
-	return (-1);
+	return (ret);
 }

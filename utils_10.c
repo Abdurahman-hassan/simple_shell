@@ -119,12 +119,7 @@ int handle_alias(char **path, alias_t **head)
 		{
 			node = get_node(*head, path[i]);
 			if (node != NULL)
-			{
-				write(STDOUT_FILENO, node->name, _strlen(node->name));
-				write(STDOUT_FILENO, "='", 2);
-				write(STDOUT_FILENO, node->value, _strlen(node->value));
-				write(STDOUT_FILENO, "'\n", 2);
-			}
+				print_node(node);
 		}
 		else
 		{

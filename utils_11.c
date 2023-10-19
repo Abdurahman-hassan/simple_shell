@@ -261,3 +261,65 @@ void handle_file(char **av, alias_t **head)
 	free(buffer);
 	close(fd);
 }
+/**
+ * execute_builtin_2 - Executes built-in commands based on
+ * the value of path[0].
+ * @buf: The input buffer.
+ * @path: An array of strings representing the command and its arguments.
+ * @av: The name of the program.
+ * @head: A pointer to the head of the alias list.
+ *
+ * Return: 1 if a built-in command was executed successfully, -1 otherwise.
+ */
+int execute_builtin_2(char *buf, char **path, char *av)
+{
+	int *_status = get_status();
+
+	if (_strcmp(path[0], "unsetenv") == 0)
+	{
+		if (_unsetenv(path[1]) == -1)
+		{
+			perror("Error");
+			free(buf);
+			free_path(path);
+			exit(*_status);
+		}
+		free_path(path);
+		return (1);
+	}
+
+	if (_strcmp(path[0], "cd") == 0)
+	{
+		if (change_directory(path[1], av) == -1)
+		{
+			free(buf);
+			free_path(path);
+			free_path(environ);
+			exit(*_status);
+		}
+		free_path(path);
+		return (1);
+	}
+
+	if (_strcmp(path[0], "exit") == 0)
+	{
+		free(buf);
+		exit_(path, av);
+	}
+
+	return (-1);
+}
+
+/**
+ * print_node - Prints the name and value of an alias node.
+ * @node: A pointer to an alias node.
+ *
+ * Return: None.
+ */
+void print_node(alias_t *node)
+{
+	write(STDOUT_FILENO, node->name, _strlen(node->name));
+	write(STDOUT_FILENO, "='", 2);
+	write(STDOUT_FILENO, node->value, _strlen(node->value));
+	write(STDOUT_FILENO, "'\n", 2);
+}
